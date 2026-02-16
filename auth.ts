@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/db"
 import Credentials from "next-auth/providers/credentials"
+import bcrypt from "bcryptjs"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: PrismaAdapter(prisma),
@@ -13,7 +14,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 password: { label: "Password", type: "password" }
             },
             authorize: async (credentials) => {
-                // Add logic here to look up the user from the credentials supplied
                 if (!credentials?.email || !credentials?.password) {
                     return null
                 }
@@ -24,8 +24,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     }
                 })
 
-                // Simple password check for now (should use bcrypt)
-                if (user && user.password === credentials.password) {
+                if (!user || !user.password) {
+                    return null
+                }
+
+                // Verify Password
+                const isValid = await bcrypt.compare(credentials.password as string, user.password)
+
+                if (isValid) {
                     return user
                 }
 
