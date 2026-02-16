@@ -7,27 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enums
-enum Role {
-  MEMBER
-  ANDEL_ADMIN
-  SYSTEM_ADMIN
-}
-
-enum WeekSource {
-  BASELINE
-  ROTATION
-  SWAP
-  OVERRIDE
-}
-
-enum SwapStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
-  CANCELLED
-}
-
 // Models
 
 model Share { // Andel
@@ -50,8 +29,8 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
-  password      String? // Optional for OAuth
-  role          Role      @default(MEMBER)
+  password      String?
+  role          String      @default("MEMBER") // ENUM: MEMBER, ANDEL_ADMIN, SYSTEM_ADMIN
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -71,11 +50,11 @@ model Week {
   weekNumber Int
   shareId   String
   share     Share      @relation(fields: [shareId], references: [id])
-  source    WeekSource @default(BASELINE)
+  source    String     @default("BASELINE") // ENUM: BASELINE, ROTATION, SWAP, OVERRIDE
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
-  @@unique([year, weekNumber]) // Only one owner per week
+  @@unique([year, weekNumber])
 }
 
 model SwapRequest {
@@ -83,9 +62,9 @@ model SwapRequest {
   requestingShareId String
   receivingShareId  String
   year              Int
-  weekA             Int // Week owned by requestor
-  weekB             Int // Week owned by receiver
-  status            SwapStatus @default(PENDING)
+  weekA             Int
+  weekB             Int
+  status            String     @default("PENDING") // ENUM: PENDING, ACCEPTED, REJECTED, CANCELLED
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
 
@@ -118,7 +97,7 @@ model Comment {
   updatedAt DateTime @updatedAt
 }
 
-model Attachment { // Generic for Forum and other uses if needed
+model Attachment {
   id        String   @id @default(uuid())
   url       String
   filename  String
@@ -178,7 +157,7 @@ model Vote {
   option    PollOption @relation(fields: [optionId], references: [id])
   createdAt DateTime   @default(now())
 
-  @@unique([userId, pollId]) // One vote per user per poll
+  @@unique([userId, pollId])
 }
 
 // NextAuth necessary models
@@ -188,12 +167,12 @@ model Account {
   type               String
   provider           String
   providerAccountId  String
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
+  refresh_token      String?
+  access_token       String?
   expires_at         Int?
   token_type         String?
   scope              String?
-  id_token           String? @db.Text
+  id_token           String?
   session_state      String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
