@@ -4,8 +4,9 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import { writeFile } from "fs/promises"
-import { join } from "path"
+
+import { s3Client, BUCKET_NAME } from "@/lib/s3"
+import { PutObjectCommand } from "@aws-sdk/client-s3"
 
 export async function createPost(formData: FormData) {
     const session = await auth()
@@ -32,35 +33,41 @@ export async function createPost(formData: FormData) {
         },
     })
 
-    // Handle File Upload (Local Dev)
+    // Handle File Upload (S3)
     if (file && file.size > 0) {
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
 
-        // Ensure filename is unique-ish
+        // Unique filename
         const filename = `${Date.now()}-${file.name.replace(/\s/g, '_')}`
-        const path = join(process.cwd(), "public", "uploads", filename)
-
-        // Ensure directory exists (might need to create it manually or check)
-        // For now assuming public exists. Users usually don't have 'uploads' folder yet.
-        // I'll assume I need to create it in a separate step or just fail if not.
-        // Actually, let's just write.
 
         try {
-            await writeFile(path, buffer)
+            await s3Client.send(new PutObjectCommand({
+                Bucket: BUCKET_NAME,
+                Key: filename,
+                Body: buffer,
+                ContentType: file.type,
+                ACL: 'public-read', // Make it public if your bucket allows
+            }))
+
+            // Construct public URL (This depends on your provider)
+            // AWS S3: https://BUCKET.s3.REGION.amazonaws.com/FILENAME
+            // R2/Spaces: Custom domain or endpoint
+            const url = `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${filename}`
 
             await prisma.attachment.create({
                 data: {
                     postId: post.id,
-                    url: `/uploads/${filename}`,
+                    url: url,
                     filename: file.name,
                     mimeType: file.type,
                     size: file.size
                 }
             })
         } catch (error) {
-            console.error("Upload failed", error)
-            // Continue without attachment
+            console.error("S3 Upload failed", error)
+            // Continue without attachment or throw?
+            // For now, let's log and continue
         }
     }
 
