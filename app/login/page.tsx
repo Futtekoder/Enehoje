@@ -1,8 +1,13 @@
-
-import { signIn } from "@/auth"
+import { signIn, auth } from "@/auth"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 
-export default function LoginPage() {
+export default async function LoginPage() {
+    const session = await auth()
+    if (session?.user) {
+        redirect("/dashboard")
+    }
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black p-4">
             <div className="max-w-md w-full bg-white dark:bg-zinc-900 rounded shadow p-8">
@@ -11,7 +16,7 @@ export default function LoginPage() {
                 <form
                     action={async (formData) => {
                         "use server"
-                        await signIn("credentials", formData)
+                        await signIn("credentials", formData, { redirectTo: "/dashboard" })
                     }}
                     className="space-y-4"
                 >
