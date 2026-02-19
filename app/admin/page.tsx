@@ -5,11 +5,22 @@ import { AdminUserTable } from "./user-table"
 export default async function AdminPage() {
     const users = await prisma.user.findMany({
         orderBy: { createdAt: 'desc' },
-        include: { share: true }
+        include: {
+            share: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            }
+        }
     })
 
     const shares = await prisma.share.findMany({
-        orderBy: { name: 'asc' }
+        orderBy: { name: 'asc' },
+        select: {
+            id: true,
+            name: true
+        }
     })
 
     return (
