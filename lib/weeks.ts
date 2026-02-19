@@ -13,7 +13,13 @@ export async function getWeekOwner(year: number, week: number) {
             },
         },
         include: {
-            share: true,
+            share: {
+                select: {
+                    id: true,
+                    name: true,
+                    color: true
+                }
+            },
         },
     })
 
@@ -30,8 +36,14 @@ export async function getWeekOwner(year: number, week: number) {
     // Ideally, we cache this or hardcode IDs if they are static, but fetching is safer.
     const shares = await prisma.share.findMany({
         orderBy: {
-            name: 'asc', // Assumes 'Andel 1', 'Andel 2'...
+            name: 'asc',
         },
+        select: {
+            id: true,
+            name: true,
+            color: true,
+            // voteWeight excluded
+        }
     })
 
     if (shares.length === 0) return null

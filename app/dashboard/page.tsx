@@ -15,18 +15,43 @@ export default async function DashboardPage() {
 
     const user = await prisma.user.findUnique({
         where: { email: session.user.email },
-        include: { share: true },
+        include: {
+            share: {
+                select: {
+                    id: true,
+                    name: true,
+                    color: true,
+                    // voteWeight excluded to prevent Decimal serialization error
+                }
+            }
+        },
     })
 
     // Fetch swaps
     const incomingSwaps = user?.share ? await prisma.swapRequest.findMany({
         where: { receivingShareId: user.share.id, status: 'PENDING' },
-        include: { requestingShare: true }
+        include: {
+            requestingShare: {
+                select: {
+                    id: true,
+                    name: true,
+                    color: true
+                }
+            }
+        }
     }) : []
 
     const outgoingSwaps = user?.share ? await prisma.swapRequest.findMany({
         where: { requestingShareId: user.share.id, status: 'PENDING' },
-        include: { receivingShare: true }
+        include: {
+            receivingShare: {
+                select: {
+                    id: true,
+                    name: true,
+                    color: true
+                }
+            }
+        }
     }) : []
 
     return (
