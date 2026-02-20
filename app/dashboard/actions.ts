@@ -24,20 +24,33 @@ export async function createSwapRequest(formData: FormData) {
     const year = parseInt(formData.get("year") as string)
     const myWeek = parseInt(formData.get("myWeek") as string)
     const targetWeek = parseInt(formData.get("targetWeek") as string)
+    const message = formData.get("message") as string
 
     if (!targetShareId || !year || !myWeek || !targetWeek) {
         throw new Error("Missing required fields")
     }
 
-    await prisma.swapRequest.create({
-        data: {
-            requestingShareId: user.share.id,
-            receivingShareId: targetShareId,
-            year: year,
-            weekA: myWeek,
-            weekB: targetWeek,
-            status: "PENDING",
-        },
+    await prisma.$transaction(async (tx) => {
+        const swapRequest = await tx.swapRequest.create({
+            data: {
+                requestingShareId: user.share!.id,
+                receivingShareId: targetShareId,
+                year: year,
+                weekA: myWeek,
+                weekB: targetWeek,
+                status: "PENDING",
+            },
+        })
+
+        if (message && message.trim() !== "") {
+            await tx.swapMessage.create({
+                data: {
+                    swapRequestId: swapRequest.id,
+                    authorId: user.id,
+                    content: message.trim(),
+                }
+            })
+        }
     })
 
     revalidatePath("/dashboard")

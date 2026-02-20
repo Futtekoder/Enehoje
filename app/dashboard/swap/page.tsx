@@ -50,6 +50,16 @@ export default async function SwapPage() {
                     </select>
                 </div>
 
+                <div>
+                    <label className="block text-sm font-medium mb-1">Besked (Valgfri)</label>
+                    <textarea
+                        name="message"
+                        rows={3}
+                        className="w-full p-2 border rounded"
+                        placeholder="Skriv en besked til andelen du vil bytte med..."
+                    />
+                </div>
+
                 <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
                     Send Anmodning
                 </button>

@@ -42,6 +42,7 @@ model User {
   posts         Post[]
   comments      Comment[]
   votes         Vote[]
+  swapMessages  SwapMessage[]
 }
 
 model Week {
@@ -70,7 +71,19 @@ model SwapRequest {
 
   requestingShare   Share      @relation("RequestingShare", fields: [requestingShareId], references: [id])
   receivingShare    Share      @relation("ReceivingShare", fields: [receivingShareId], references: [id])
+  messages          SwapMessage[]
 }
+
+model SwapMessage {
+  id            String      @id @default(uuid())
+  swapRequestId String
+  swapRequest   SwapRequest @relation(fields: [swapRequestId], references: [id], onDelete: Cascade)
+  authorId      String   
+  author        User        @relation(fields: [authorId], references: [id])
+  content       String
+  createdAt     DateTime    @default(now())
+}
+
 
 model Post {
   id        String   @id @default(uuid())
