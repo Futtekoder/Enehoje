@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { MessageCircle, ArrowRightLeft } from "lucide-react"
 
 export default async function CalendarForumPage() {
     const session = await auth()
@@ -12,13 +13,7 @@ export default async function CalendarForumPage() {
         include: { share: true }
     })
 
-    if (!user?.share) {
-        return (
-            <div className="container mx-auto p-6 text-center">
-                Du skal være tilknyttet en andel for at se kalender-forummet.
-            </div>
-        )
-    }
+    if (!user) return <div>Unauthorized</div>
 
     // 1. Fetch General Discussions for "calendar"
     const generalPosts = await prisma.post.findMany({
@@ -28,22 +23,24 @@ export default async function CalendarForumPage() {
         take: 10 // Limit for now, or add pagination later
     })
 
-    // 2. Fetch Swap Requests involving user's share (Private Chats)
-    const swapChats = await prisma.swapRequest.findMany({
+    // 2. Fetch User's Conversations (Private Chats)
+    const conversations = await prisma.conversation.findMany({
         where: {
-            OR: [
-                { requestingShareId: user.share.id },
-                { receivingShareId: user.share.id }
-            ]
+            participants: {
+                some: { userId: user.id }
+            }
         },
         include: {
-            requestingShare: true,
-            receivingShare: true,
-            _count: { select: { messages: true } },
             messages: {
                 orderBy: { createdAt: 'desc' },
                 take: 1, // Get latest message for preview
                 include: { author: { select: { name: true } } }
+            },
+            participants: {
+                include: { user: { include: { share: true } } }
+            },
+            swapRequest: {
+                include: { requestingShare: true, receivingShare: true }
             }
         },
         orderBy: { updatedAt: 'desc' }
@@ -83,53 +80,76 @@ export default async function CalendarForumPage() {
                     </div>
                 </div>
 
-                {/* Column 2: Private Swap Chats */}
+                {/* Column 2: Private Chats */}
                 <div className="space-y-6">
-                    <div className="border-b pb-2">
-                        <h2 className="text-2xl font-semibold">Dine Bytteanmodninger</h2>
-                        <p className="text-sm text-gray-500 mt-1">Privat chat for dine aktive og tidligere bytteønsker.</p>
+                    <div className="flex justify-between items-center border-b pb-2">
+                        <div>
+                            <h2 className="text-2xl font-semibold">Private Beskeder</h2>
+                            <p className="text-sm text-gray-500 mt-1">Personlige og delte samtaler grupperet her.</p>
+                        </div>
+                        <Link href={`/forum/calendar/chat/new`} className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-full hover:bg-blue-700 transition flex items-center gap-1 shadow-sm">
+                            <MessageCircle className="w-4 h-4" /> Ny Chat
+                        </Link>
                     </div>
 
                     <div className="space-y-4">
-                        {swapChats.length === 0 ? (
+                        {conversations.length === 0 ? (
                             <div className="text-center p-8 bg-gray-50 dark:bg-zinc-900 rounded-xl border border-dashed">
-                                <p className="text-gray-500 italic text-sm">Ingen bytteanmodninger endnu.</p>
-                                <Link href="/dashboard/swap" className="text-blue-600 hover:underline text-sm mt-2 inline-block">Opret et bytteønske</Link>
+                                <p className="text-gray-500 italic text-sm mb-2">Du har ingen private samtaler endnu.</p>
+                                <p className="text-gray-400 text-xs text-balance">Start en ny chat eller opret et bytteønske med besked for at se den her.</p>
                             </div>
                         ) : (
-                            swapChats.map(chat => {
-                                const isRequester = chat.requestingShareId === user.share!.id
-                                const otherShare = isRequester ? chat.receivingShare : chat.requestingShare
+                            conversations.map(chat => {
                                 const latestMessage = chat.messages[0]
 
+                                // Determine Chat Title
+                                let chatTitle = "Samtale"
+                                if (chat.title) {
+                                    chatTitle = chat.title
+                                } else if (chat.swapRequest) {
+                                    // It's a swap chat
+                                    const isRequester = chat.swapRequest.requestingShareId === user.share?.id
+                                    const otherShare = isRequester ? chat.swapRequest.receivingShare : chat.swapRequest.requestingShare
+                                    chatTitle = `Bytte med ${otherShare?.name || 'Ukendt'}`
+                                } else {
+                                    // Generate title from other participants
+                                    const otherUsers = chat.participants.filter(p => p.userId !== user.id).map(p => p.user.name || p.user.email)
+                                    if (otherUsers.length > 0) {
+                                        chatTitle = otherUsers.join(", ")
+                                        if (chatTitle.length > 30) chatTitle = chatTitle.substring(0, 27) + "..."
+                                    } else {
+                                        chatTitle = "Tom Samtale"
+                                    }
+                                }
+
                                 return (
-                                    <Link key={chat.id} href={`/forum/calendar/swap/${chat.id}`} className="block p-4 bg-white dark:bg-zinc-900 border rounded-xl shadow-sm hover:shadow-md transition relative overflow-hidden">
-                                        {/* Status Indicator Bar */}
-                                        <div className={`absolute left-0 top-0 bottom-0 w-1 ${chat.status === 'PENDING' ? 'bg-orange-400' :
-                                                chat.status === 'ACCEPTED' ? 'bg-green-500' : 'bg-red-500'
-                                            }`} />
+                                    <Link key={chat.id} href={`/forum/calendar/chat/${chat.id}`} className="block p-4 bg-white dark:bg-zinc-900 border rounded-xl shadow-sm hover:shadow-md transition relative overflow-hidden group">
 
-                                        <div className="ml-2">
-                                            <div className="flex justify-between items-start mb-1">
-                                                <h3 className="font-semibold text-gray-900 dark:text-white">
-                                                    Chat med {otherShare.name}
-                                                </h3>
-                                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 dark:bg-zinc-800">
-                                                    {chat.status}
+                                        <div className="flex justify-between items-start mb-1">
+                                            <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                                                {chat.swapRequest ? <ArrowRightLeft className="w-4 h-4 text-orange-500" /> : <MessageCircle className="w-4 h-4 text-blue-500" />}
+                                                {chatTitle}
+                                            </h3>
+                                            {chat.swapRequest && (
+                                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 dark:bg-zinc-800 border">
+                                                    {chat.swapRequest.status}
                                                 </span>
-                                            </div>
-                                            <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-2">
-                                                Bytte: Uge {chat.weekA} &harr; Uge {chat.weekB}
-                                            </p>
-
-                                            {latestMessage ? (
-                                                <p className="text-xs text-gray-500 truncate border-t pt-2 mt-2">
-                                                    <span className="font-semibold">{latestMessage.author.name}:</span> {latestMessage.content}
-                                                </p>
-                                            ) : (
-                                                <p className="text-xs text-gray-400 italic border-t pt-2 mt-2">Ingen beskeder endnu.</p>
                                             )}
                                         </div>
+
+                                        {chat.swapRequest && (
+                                            <p className="text-xs text-orange-600 dark:text-orange-400 font-medium mb-2 bg-orange-50 dark:bg-orange-900/10 inline-block px-1.5 py-0.5 rounded">
+                                                Uge {chat.swapRequest.weekA} &harr; Uge {chat.swapRequest.weekB}
+                                            </p>
+                                        )}
+
+                                        {latestMessage ? (
+                                            <p className="text-xs text-gray-500 truncate mt-1">
+                                                <span className="font-semibold">{latestMessage.author.name}:</span> {latestMessage.content}
+                                            </p>
+                                        ) : (
+                                            <p className="text-xs text-gray-400 italic mt-1">Ingen beskeder endnu.</p>
+                                        )}
                                     </Link>
                                 )
                             })

@@ -2,10 +2,10 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { sendSwapMessage } from "./actions"
+import { sendChatMessage } from "./actions"
 
-export default async function SwapChatPage({ params }: { params: Promise<{ swapId: string }> }) {
-    const { swapId } = await params
+export default async function ChatPage({ params }: { params: Promise<{ conversationId: string }> }) {
+    const { conversationId } = await params
     const session = await auth()
     if (!session?.user?.email) redirect("/api/auth/signin")
 
@@ -14,13 +14,13 @@ export default async function SwapChatPage({ params }: { params: Promise<{ swapI
         include: { share: true }
     })
 
-    if (!user?.share) return <div>Unauthorized</div>
+    if (!user) return <div>Unauthorized</div>
 
-    const swap = await prisma.swapRequest.findUnique({
-        where: { id: swapId },
+    const conversation = await prisma.conversation.findUnique({
+        where: { id: conversationId },
         include: {
-            requestingShare: true,
-            receivingShare: true,
+            participants: { include: { user: { include: { share: true } } } },
+            swapRequest: { include: { requestingShare: true, receivingShare: true } },
             messages: {
                 include: { author: { include: { share: true } } },
                 orderBy: { createdAt: 'asc' }
@@ -28,48 +28,60 @@ export default async function SwapChatPage({ params }: { params: Promise<{ swapI
         }
     })
 
-    if (!swap) return <div>Swap not found</div>
+    if (!conversation) return <div>Conversation not found</div>
 
-    // Security Verification: Only involved shares can view
-    const isRequester = swap.requestingShareId === user.share.id
-    const isReceiver = swap.receivingShareId === user.share.id
-
-    if (!isRequester && !isReceiver && user.role !== 'SYSTEM_ADMIN') {
+    // Security: Is current user a participant?
+    const isParticipant = conversation.participants.some(p => p.userId === user.id)
+    if (!isParticipant && user.role !== 'SYSTEM_ADMIN') {
         return <div className="p-6 text-center text-red-600">Du har ikke adgang til denne private chat.</div>
     }
 
-    const otherShare = isRequester ? swap.receivingShare : swap.requestingShare
+    // Determine Title
+    let chatTitle = "Samtale"
+    if (conversation.title) chatTitle = conversation.title
+    else if (conversation.swapRequest) {
+        const isRequester = conversation.swapRequest.requestingShareId === user.share?.id
+        const otherShare = isRequester ? conversation.swapRequest.receivingShare : conversation.swapRequest.requestingShare
+        chatTitle = `Bytte med ${otherShare?.name || 'Ukendt'}`
+    } else {
+        const otherUsers = conversation.participants.filter(p => p.userId !== user.id).map(p => p.user.name || p.user.email)
+        chatTitle = otherUsers.length > 0 ? otherUsers.join(", ") : "Tom Samtale"
+    }
 
     return (
         <div className="container mx-auto p-4 md:p-6 max-w-3xl flex flex-col h-[calc(100vh-80px)]">
-            <Link href="/forum/calendar" className="text-blue-600 hover:underline mb-4 inline-block">&larr; Tilbage til Kalender Forum</Link>
+            <Link href="/forum/calendar" className="text-blue-600 hover:underline mb-4 inline-block">&larr; Tilbage til Oversigt</Link>
 
             {/* Header */}
             <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-t-2xl p-4 md:p-6 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 className="text-xl font-bold flex items-center gap-2">
-                        Privat Chat: {otherShare.name}
+                        {chatTitle}
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">
-                        Vedrørende bytte af uge <strong className="text-gray-900 dark:text-gray-100">{swap.weekA}</strong> og <strong className="text-gray-900 dark:text-gray-100">{swap.weekB}</strong> ({swap.year})
-                    </p>
+                    {conversation.swapRequest && (
+                        <p className="text-sm text-orange-600 dark:text-orange-400 mt-1 font-medium">
+                            Vedrørende bytte af uge {conversation.swapRequest.weekA} og {conversation.swapRequest.weekB} ({conversation.swapRequest.year})
+                        </p>
+                    )}
                 </div>
-                <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${swap.status === 'PENDING' ? 'bg-orange-100 text-orange-800' :
-                        swap.status === 'ACCEPTED' ? 'bg-green-100 text-green-800' :
-                            'bg-red-100 text-red-800'
-                    }`}>
-                    Status: {swap.status}
-                </div>
+                {conversation.swapRequest && (
+                    <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${conversation.swapRequest.status === 'PENDING' ? 'bg-orange-100 text-orange-800' :
+                            conversation.swapRequest.status === 'ACCEPTED' ? 'bg-green-100 text-green-800' :
+                                'bg-red-100 text-red-800'
+                        }`}>
+                        {conversation.swapRequest.status}
+                    </div>
+                )}
             </div>
 
             {/* Message Area */}
             <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-black p-4 md:p-6 border-x border-gray-200 dark:border-zinc-800 flex flex-col gap-4">
-                {swap.messages.length === 0 ? (
+                {conversation.messages.length === 0 ? (
                     <div className="h-full flex items-center justify-center text-gray-500 italic text-sm">
                         Ingen beskeder endnu. Start samtalen nedenfor.
                     </div>
                 ) : (
-                    swap.messages.map(msg => {
+                    conversation.messages.map(msg => {
                         const isMe = msg.authorId === user.id
                         return (
                             <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
@@ -93,8 +105,8 @@ export default async function SwapChatPage({ params }: { params: Promise<{ swapI
 
             {/* Input Area */}
             <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-b-2xl p-4 shadow-sm">
-                <form action={sendSwapMessage} className="flex gap-2">
-                    <input type="hidden" name="swapId" value={swap.id} />
+                <form action={sendChatMessage} className="flex gap-2">
+                    <input type="hidden" name="conversationId" value={conversation.id} />
                     <input
                         type="text"
                         name="content"

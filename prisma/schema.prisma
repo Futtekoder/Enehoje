@@ -37,12 +37,13 @@ model User {
   shareId       String?
   share         Share?    @relation(fields: [shareId], references: [id])
   
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
-  comments      Comment[]
-  votes         Vote[]
-  swapMessages  SwapMessage[]
+  accounts         Account[]
+  sessions         Session[]
+  posts            Post[]
+  comments         Comment[]
+  votes            Vote[]
+  messages         Message[]
+  conversations    ConversationParticipant[]
 }
 
 model Week {
@@ -71,18 +72,43 @@ model SwapRequest {
 
   requestingShare   Share      @relation("RequestingShare", fields: [requestingShareId], references: [id])
   receivingShare    Share      @relation("ReceivingShare", fields: [receivingShareId], references: [id])
-  messages          SwapMessage[]
+  conversation      Conversation?
 }
 
-model SwapMessage {
-  id            String      @id @default(uuid())
-  swapRequestId String
-  swapRequest   SwapRequest @relation(fields: [swapRequestId], references: [id], onDelete: Cascade)
-  authorId      String   
-  author        User        @relation(fields: [authorId], references: [id])
-  content       String
-  createdAt     DateTime    @default(now())
+model Conversation {
+  id            String     @id @default(uuid())
+  title         String?    // Optional: for group chats (e.g., "Bestyrelsen")
+  isGroup       Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  participants  ConversationParticipant[]
+  messages      Message[]
+
+  swapRequestId String?      @unique
+  swapRequest   SwapRequest? @relation(fields: [swapRequestId], references: [id], onDelete: Cascade)
 }
+
+model ConversationParticipant {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([conversationId, userId])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  authorId       String
+  author         User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content        String       @db.Text
+  createdAt      DateTime     @default(now())
+}
+
 
 
 model Post {

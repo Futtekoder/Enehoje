@@ -43,11 +43,29 @@ export async function createSwapRequest(formData: FormData) {
         })
 
         if (message && message.trim() !== "") {
-            await tx.swapMessage.create({
+            // Find all users in the receiving share
+            const receivingUsers = await tx.user.findMany({
+                where: { shareId: targetShareId },
+                select: { id: true }
+            })
+
+            // Create a conversation for this swap request
+            const conversation = await tx.conversation.create({
                 data: {
                     swapRequestId: swapRequest.id,
-                    authorId: user.id,
-                    content: message.trim(),
+                    isGroup: receivingUsers.length > 1,
+                    participants: {
+                        create: [
+                            { userId: user.id },
+                            ...receivingUsers.map(u => ({ userId: u.id }))
+                        ]
+                    },
+                    messages: {
+                        create: {
+                            authorId: user.id,
+                            content: message.trim()
+                        }
+                    }
                 }
             })
         }
