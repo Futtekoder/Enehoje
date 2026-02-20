@@ -10,7 +10,14 @@ export default function LandingPage() {
         Replace the bg-gradient class below with your actual image:
         style={{ backgroundImage: "url('/your-island-image.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
       */}
-      <section className="relative flex-1 min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-700 to-teal-500 overflow-hidden">
+      <section
+        className="relative flex-1 min-h-screen flex items-center justify-center overflow-hidden bg-blue-900"
+        style={{
+          backgroundImage: "url('/images/hero.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center"
+        }}
+      >
 
         {/* Overlay to ensure text readability if using an image */}
         <div className="absolute inset-0 bg-black/30" />
