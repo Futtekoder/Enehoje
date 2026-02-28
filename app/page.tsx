@@ -32,34 +32,43 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="space-y-4 max-w-3xl animate-fade-in-up delay-100">
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-white drop-shadow-lg">
-              Velkommen til <span className="text-teal-200">Enehøje</span>
-            </h1>
-            <p className="mx-auto max-w-[700px] text-blue-100 md:text-xl lg:text-2xl font-light drop-shadow-md mb-8">
-              Din digitale foreningsplatform. Log ind for at tilgå ugeplaner, dokumenter og fælles beslutninger.
-            </p>
+          {/* Main Content Area: Side by Side on Desktop */}
+          <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20">
 
-            {/* Marine Conditions Widget */}
-            <div className="w-full mt-12 mb-8 animate-fade-in-up delay-200">
+            {/* Left Column: Text & Buttons */}
+            <div className="flex-1 space-y-8 text-center flex flex-col items-center lg:items-start lg:text-left animate-fade-in-up delay-100">
+              <div className="space-y-4">
+                <h1 className="text-4xl font-black tracking-tighter md:text-5xl lg:text-7xl text-white drop-shadow-lg leading-tight">
+                  Velkommen til <br className="hidden lg:block" /><span className="text-teal-300">Enehøje</span>
+                </h1>
+                <p className="max-w-[600px] text-blue-50 md:text-xl font-medium drop-shadow-md">
+                  Din digitale foreningsplatform. Log ind for at tilgå ugeplaner, dokumenter og fælles beslutninger.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+                <Link
+                  className="flex-1 inline-flex h-14 items-center justify-center rounded-xl bg-white text-blue-900 text-lg font-bold shadow-xl transition-all hover:scale-105 hover:bg-gray-50 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  href="/login"
+                >
+                  Log ind
+                </Link>
+                <Link
+                  className="flex-1 inline-flex h-14 items-center justify-center rounded-xl bg-blue-600/80 backdrop-blur-md border border-blue-400/50 text-white text-lg font-bold shadow-xl transition-all hover:scale-105 hover:bg-blue-600 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  href="/register"
+                >
+                  Opret bruger
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Column: Widget */}
+            <div className="flex-shrink-0 w-full max-w-md lg:max-w-md animate-fade-in-up delay-200">
               <MarineWidget />
             </div>
-          </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm animate-fade-in-up delay-300">
-            <Link
-              className="flex-1 inline-flex h-12 items-center justify-center rounded-xl bg-white text-blue-900 text-base font-bold shadow-lg transition-transform hover:scale-105 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-              href="/login"
-            >
-              Log ind
-            </Link>
-            <Link
-              className="flex-1 inline-flex h-12 items-center justify-center rounded-xl bg-blue-600/80 backdrop-blur-sm border border-blue-400/30 text-white text-base font-bold shadow-lg transition-transform hover:scale-105 hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-              href="/register"
-            >
-              Opret bruger
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
           </div>
         </div>
 

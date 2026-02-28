@@ -60,32 +60,34 @@ export function MarineWidget() {
     const overallStatusColor = data.sailing_ok ? "SAFE" : (data.wind_status === "CAUTION" && data.depth_ok) ? "CAUTION" : "NO_GO"
 
     return (
-        <Card className="w-full max-w-3xl mx-auto shadow-xl border-blue-100 dark:border-zinc-800 overflow-hidden bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl">
-            {/* Header / Big Indicator */}
-            <div className={`p-6 border-b flex flex-col items-center justify-center transition-colors ${getStatusColors(overallStatusColor)}`}>
-                <h3 className="text-sm font-semibold uppercase tracking-wider mb-2 opacity-80">Sejlbarhed Enehøje</h3>
-                <div className="flex items-center gap-3">
-                    <StatusIcon status={overallStatusColor} className="h-10 w-10" />
-                    <h2 className="text-4xl font-black tracking-tight">{overallStatusText}</h2>
+        <Card className="w-full mx-auto shadow-2xl border-white/20 dark:border-white/10 overflow-hidden bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-2xl">
+            {/* Header / Big Indicator - Compact */}
+            <div className={`p-3 border-b flex items-center justify-between transition-colors ${getStatusColors(overallStatusColor)}`}>
+                <div className="flex items-center gap-2">
+                    <StatusIcon status={overallStatusColor} className="h-6 w-6" />
+                    <h2 className="text-xl font-black tracking-tight">{overallStatusText}</h2>
                 </div>
+                <h3 className="text-xs font-bold uppercase tracking-widest opacity-70">
+                    Sejlbarhed Enehøje
+                </h3>
             </div>
 
-            <CardContent className="p-6">
-                {/* Current Stats Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <CardContent className="p-4">
+                {/* Current Stats Row - Super Compact Side by Side */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
 
                     {/* WIND */}
-                    <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-zinc-800/50">
-                        <div className={`p-3 rounded-full ${getStatusColors(data.wind_status)}`}>
-                            <Wind className="h-6 w-6" />
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50/80 dark:bg-zinc-800/80 border border-gray-100 dark:border-zinc-700/50">
+                        <div className={`p-2 rounded-full flex-shrink-0 ${getStatusColors(data.wind_status)}`}>
+                            <Wind className="h-4 w-4" />
                         </div>
-                        <div>
-                            <p className="text-sm text-gray-500 font-medium">Aktuel Vind</p>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-2xl font-bold">{data.wind_now_ms.toFixed(1)}</span>
-                                <span className="text-gray-500">m/s</span>
+                        <div className="flex flex-col">
+                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Aktuel Vind</span>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-lg font-black leading-none">{data.wind_now_ms.toFixed(1)}</span>
+                                <span className="text-xs text-gray-500 font-medium">m/s</span>
                             </div>
-                            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                            <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-0.5 font-medium">
                                 <Navigation2 className="h-3 w-3" style={{ transform: `rotate(${data.wind_direction}deg)` }} />
                                 <span>{data.wind_direction}°</span>
                             </div>
@@ -93,48 +95,47 @@ export function MarineWidget() {
                     </div>
 
                     {/* DEPTH */}
-                    <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-zinc-800/50">
-                        <div className={`p-3 rounded-full ${data.depth_ok ? getStatusColors("SAFE") : getStatusColors("NO_GO")}`}>
-                            <Waves className="h-6 w-6" />
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50/80 dark:bg-zinc-800/80 border border-gray-100 dark:border-zinc-700/50">
+                        <div className={`p-2 rounded-full flex-shrink-0 ${data.depth_ok ? getStatusColors("SAFE") : getStatusColors("NO_GO")}`}>
+                            <Waves className="h-4 w-4" />
                         </div>
-                        <div className="flex-1">
-                            <p className="text-sm text-gray-500 font-medium">Beregnet Vanddybde</p>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-2xl font-bold">{data.calculated_depth_m.toFixed(2)}</span>
-                                <span className="text-gray-500">m</span>
+                        <div className="flex flex-col w-full">
+                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Vanddybde</span>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-lg font-black leading-none">{data.calculated_depth_m.toFixed(2)}</span>
+                                <span className="text-xs text-gray-500 font-medium">m</span>
                             </div>
-                            <div className="text-sm text-gray-500 mt-1 flex justify-between">
-                                <span>Næste lavvande: {new Date(data.next_low_tide.time).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}</span>
+                            <div className="text-[10px] text-gray-400 mt-0.5 font-medium truncate">
+                                Lavvande: {new Date(data.next_low_tide.time).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* 7-Day Forecast */}
+                {/* 7-Day Forecast - Compact Horizontal Scroll/Grid */}
                 <div>
-                    <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <Info className="h-4 w-4" /> 7-Dages Udsigt (Maks Vind)
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                        <Info className="h-3 w-3" /> Maks vind udsigt
                     </h4>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+                    <div className="grid grid-cols-7 gap-1.5">
                         {data.forecast.map((day: any) => {
                             const dateObj = new Date(day.date)
-                            const dayName = dateObj.toLocaleDateString('da-DK', { weekday: 'short' })
+                            const dayName = dateObj.toLocaleDateString('da-DK', { weekday: 'short' }).replace('.', '')
 
                             return (
-                                <div key={day.date} className={`flex flex-col items-center justify-center p-3 rounded-lg border text-center ${getStatusColors(day.wind_status)}`}>
-                                    <span className="text-xs font-bold uppercase mb-1">{dayName}</span>
-                                    <span className="font-bold text-lg leading-none mb-1">{day.max_wind_ms.toFixed(1)}</span>
-                                    <span className="text-[10px] opacity-80">m/s</span>
-                                    <StatusIcon status={day.wind_status} className="h-4 w-4 mt-2" />
+                                <div key={day.date} className={`flex flex-col items-center justify-center py-2 px-1 rounded-md border ${getStatusColors(day.wind_status)}`}>
+                                    <span className="text-[9px] font-bold uppercase mb-0.5 opacity-80">{dayName}</span>
+                                    <span className="font-extrabold text-xs leading-none">{Math.round(day.max_wind_ms)}</span>
+                                    {/* <StatusIcon status={day.wind_status} className="h-3 w-3 mt-1 opacity-80" /> */}
                                 </div>
                             )
                         })}
                     </div>
                 </div>
 
-                <div className="mt-6 text-right text-xs text-gray-400">
-                    Sidst opdateret: {new Date(data.last_updated).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
+                <div className="mt-3 text-right text-[9px] text-gray-400 font-medium">
+                    Opdateret: {new Date(data.last_updated).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
                 </div>
             </CardContent>
         </Card>
