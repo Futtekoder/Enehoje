@@ -27,16 +27,14 @@ export async function requestPasswordReset(formData: FormData) {
         // Token expires in 1 hour
         const expires = new Date(Date.now() + 3600 * 1000)
 
-        // Save or update existing reset token for this email
-        await prisma.passwordResetToken.upsert({
-            where: {
-                email
-            },
-            update: {
-                token,
-                expires
-            },
-            create: {
+        // Clean up any existing tokens for this user first
+        await prisma.passwordResetToken.deleteMany({
+            where: { email }
+        })
+
+        // Create the new reset token
+        await prisma.passwordResetToken.create({
+            data: {
                 email,
                 token,
                 expires
