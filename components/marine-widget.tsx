@@ -1,7 +1,7 @@
 "use client"
 
 import useSWR from "swr"
-import { Wind, Waves, AlertTriangle, CheckCircle2, XCircle, Info, Navigation2 } from "lucide-react"
+import { Wind, Waves, AlertTriangle, CheckCircle2, XCircle, Info, Navigation2, Sun, Cloud, CloudSun, CloudRain, CloudSnow, CloudLightning, CloudFog, CloudDrizzle } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card"
 
 const fetcher = (url: string) => fetch(url).then(res => res.json())
@@ -38,6 +38,18 @@ export function MarineWidget() {
     }
 
     // Helper functions for dynamic UI classes
+    const WeatherIcon = ({ code, className = "" }: { code: number, className?: string }) => {
+        if (code === 0) return <Sun className={className} />;
+        if (code === 1 || code === 2) return <CloudSun className={className} />;
+        if (code === 3) return <Cloud className={className} />;
+        if (code === 45 || code === 48) return <CloudFog className={className} />;
+        if ([51, 53, 55, 56, 57].includes(code)) return <CloudDrizzle className={className} />;
+        if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return <CloudRain className={className} />;
+        if ([71, 73, 75, 77, 85, 86].includes(code)) return <CloudSnow className={className} />;
+        if ([95, 96, 99].includes(code)) return <CloudLightning className={className} />;
+        return <Cloud className={className} />;
+    }
+
     const getStatusColors = (status: string) => {
         switch (status) {
             case "SAFE":
@@ -115,7 +127,7 @@ export function MarineWidget() {
                 {/* 7-Day Forecast - Compact Horizontal Scroll/Grid */}
                 <div>
                     <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                        <Info className="h-3 w-3" /> Maks vind udsigt
+                        <Info className="h-3 w-3" /> 7-Dages Vejrudsigt
                     </h4>
 
                     <div className="grid grid-cols-7 gap-1.5">
@@ -126,8 +138,14 @@ export function MarineWidget() {
                             return (
                                 <div key={day.date} className={`flex flex-col items-center justify-center py-2 px-1 rounded-md border ${getStatusColors(day.wind_status)}`}>
                                     <span className="text-[9px] font-bold uppercase mb-0.5 opacity-80">{dayName}</span>
-                                    <span className="font-extrabold text-xs leading-none">{Math.round(day.max_wind_ms)}</span>
-                                    {/* <StatusIcon status={day.wind_status} className="h-3 w-3 mt-1 opacity-80" /> */}
+                                    <WeatherIcon code={day.weather_code} className="h-5 w-5 my-1 opacity-90" />
+                                    <span className="font-extrabold text-[10px] flex items-baseline gap-0.5">
+                                        {Math.round(day.max_wind_ms)}
+                                        <span className="text-[7px] font-bold opacity-80">m/s</span>
+                                    </span>
+                                    <span className="text-[9px] font-semibold mt-0.5 opacity-90">
+                                        {Math.round(day.max_temp_c)}°
+                                    </span>
                                 </div>
                             )
                         })}

@@ -14,7 +14,7 @@ export async function GET(request: Request) {
         meteoUrl.searchParams.append("latitude", MARINE_LAT);
         meteoUrl.searchParams.append("longitude", MARINE_LON);
         meteoUrl.searchParams.append("current", "wind_speed_10m,wind_direction_10m");
-        meteoUrl.searchParams.append("daily", "wind_speed_10m_max");
+        meteoUrl.searchParams.append("daily", "wind_speed_10m_max,weather_code,temperature_2m_max");
         meteoUrl.searchParams.append("timezone", "Europe/Copenhagen");
         // Ensure we get 7 days of forecast
         meteoUrl.searchParams.append("forecast_days", "7");
@@ -94,10 +94,14 @@ export async function GET(request: Request) {
         // 6. Format the 7-Day Forecast Array
         const forecast = meteoData.daily.time.map((dateString: string, index: number) => {
             const maxWindMs = meteoData.daily.wind_speed_10m_max[index];
+            const weatherCode = meteoData.daily.weather_code[index];
+            const maxTemp = meteoData.daily.temperature_2m_max[index];
             return {
                 date: dateString,
                 max_wind_ms: maxWindMs,
                 wind_status: getWindStatus(maxWindMs),
+                weather_code: weatherCode,
+                max_temp_c: maxTemp,
                 min_depth_m: BASE_DEPTH // Mocked for now, assumes no tide changes
             };
         });
