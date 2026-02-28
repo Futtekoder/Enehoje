@@ -37,20 +37,23 @@ export default async function LoginPage({
                     action={async (formData) => {
                         "use server"
                         try {
-                            await signIn("credentials", { ...Object.fromEntries(formData), redirect: false })
+                            await signIn("credentials", formData, { redirectTo: "/dashboard" })
                         } catch (error: any) {
-                            if (error?.type === "PendingApprovalError" || error?.message?.includes("PENDING_APPROVAL")) {
+                            const errorString = String(error.message || error)
+
+                            if (error?.type === "PendingApprovalError" || errorString.includes("PENDING_APPROVAL") || errorString.includes("PendingApprovalError")) {
                                 redirect("/login?error=PENDING_APPROVAL")
                             }
-                            if (error?.type === "AccountRejectedError" || error?.message?.includes("ACCOUNT_REJECTED")) {
+                            if (error?.type === "AccountRejectedError" || errorString.includes("ACCOUNT_REJECTED") || errorString.includes("AccountRejectedError")) {
                                 redirect("/login?error=ACCOUNT_REJECTED")
                             }
-                            if (error?.type === "CredentialsSignin") {
+                            if (error?.type === "CredentialsSignin" || errorString.includes("CredentialsSignin")) {
                                 redirect("/login?error=CredentialsSignin")
                             }
+
+                            // Re-throw NEXT_REDIRECT or any other successful navigation errors
                             throw error
                         }
-                        redirect("/dashboard")
                     }}
                     className="space-y-4"
                 >
