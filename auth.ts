@@ -1,8 +1,16 @@
-import NextAuth from "next-auth"
+import NextAuth, { AuthError } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/db"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
+
+class PendingApprovalError extends AuthError {
+    type = "PendingApprovalError" as any
+}
+
+class AccountRejectedError extends AuthError {
+    type = "AccountRejectedError" as any
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: PrismaAdapter(prisma),
@@ -33,10 +41,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
                 if (isValid) {
                     if (user.status === "PENDING") {
-                        throw new Error("PENDING_APPROVAL")
+                        throw new PendingApprovalError()
                     }
                     if (user.status === "REJECTED") {
-                        throw new Error("ACCOUNT_REJECTED")
+                        throw new AccountRejectedError()
                     }
                     return user
                 }

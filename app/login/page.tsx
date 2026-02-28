@@ -2,7 +2,11 @@ import { signIn, auth } from "@/auth"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
-export default async function LoginPage() {
+export default async function LoginPage({
+    searchParams,
+}: {
+    searchParams: { error?: string }
+}) {
     const session = await auth()
     if (session?.user) {
         redirect("/dashboard")
@@ -13,10 +17,40 @@ export default async function LoginPage() {
             <div className="max-w-md w-full bg-white dark:bg-zinc-900 rounded shadow p-8">
                 <h1 className="text-2xl font-bold mb-6 text-center">Log Ind</h1>
 
+                {searchParams?.error === "PENDING_APPROVAL" && (
+                    <div className="mb-4 p-3 bg-yellow-50 text-yellow-800 rounded-md text-sm border border-yellow-200">
+                        Din konto afventer godkendelse fra en administrator. Du vil modtage en e-mail når du kan logge ind.
+                    </div>
+                )}
+                {searchParams?.error === "ACCOUNT_REJECTED" && (
+                    <div className="mb-4 p-3 bg-red-50 text-red-800 rounded-md text-sm border border-red-200">
+                        Din konto er desværre blevet afvist af en administrator.
+                    </div>
+                )}
+                {searchParams?.error === "CredentialsSignin" && (
+                    <div className="mb-4 p-3 bg-red-50 text-red-800 rounded-md text-sm border border-red-200">
+                        Forkert email eller adgangskode. Prøv venligst igen.
+                    </div>
+                )}
+
                 <form
                     action={async (formData) => {
                         "use server"
-                        await signIn("credentials", formData, { redirectTo: "/dashboard" })
+                        try {
+                            await signIn("credentials", { ...Object.fromEntries(formData), redirect: false })
+                        } catch (error: any) {
+                            if (error?.type === "PendingApprovalError" || error?.message?.includes("PENDING_APPROVAL")) {
+                                redirect("/login?error=PENDING_APPROVAL")
+                            }
+                            if (error?.type === "AccountRejectedError" || error?.message?.includes("ACCOUNT_REJECTED")) {
+                                redirect("/login?error=ACCOUNT_REJECTED")
+                            }
+                            if (error?.type === "CredentialsSignin") {
+                                redirect("/login?error=CredentialsSignin")
+                            }
+                            throw error
+                        }
+                        redirect("/dashboard")
                     }}
                     className="space-y-4"
                 >
