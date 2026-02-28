@@ -32,6 +32,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 const isValid = await bcrypt.compare(credentials.password as string, user.password)
 
                 if (isValid) {
+                    if (user.status === "PENDING") {
+                        throw new Error("PENDING_APPROVAL")
+                    }
+                    if (user.status === "REJECTED") {
+                        throw new Error("ACCOUNT_REJECTED")
+                    }
                     return user
                 }
 
@@ -46,6 +52,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async jwt({ token, user }) {
             if (user) {
                 token.role = user.role
+                token.status = user.status
             }
             return token
         },
@@ -53,6 +60,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             if (token && session.user) {
                 session.user.id = token.sub as string
                 session.user.role = token.role as string
+                session.user.status = token.status as string
             }
             return session
         },

@@ -52,3 +52,14 @@ export async function updateUserShare(userId: string, shareId: string) {
 
     revalidatePath("/admin")
 }
+
+export async function updateUserStatus(userId: string, status: 'APPROVED' | 'REJECTED' | 'PENDING') {
+    await checkAdmin()
+
+    await prisma.user.update({
+        where: { id: userId },
+        data: { status }
+    })
+
+    revalidatePath("/admin")
+}

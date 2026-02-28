@@ -2,14 +2,15 @@
 "use client"
 
 import { useState } from "react"
-import { toggleAdminRole, deleteUser, updateUserShare } from "./actions"
-import { Shield, Trash2, Edit2, Check, X } from "lucide-react"
+import { toggleAdminRole, deleteUser, updateUserShare, updateUserStatus } from "./actions"
+import { Shield, Trash2, Edit2, Check, X, Clock } from "lucide-react"
 
 type User = {
     id: string
     name: string | null
     email: string
     role: string
+    status: string
     shareId: string | null
     createdAt: Date
     share: { name: string } | null
@@ -37,6 +38,7 @@ export function AdminUserTable({ users, shares }: { users: User[], shares: Share
                             <th className="px-6 py-4 font-semibold text-gray-900 dark:text-white">Navn / Email</th>
                             <th className="px-6 py-4 font-semibold text-gray-900 dark:text-white">Andel</th>
                             <th className="px-6 py-4 font-semibold text-gray-900 dark:text-white">Rolle</th>
+                            <th className="px-6 py-4 font-semibold text-gray-900 dark:text-white">Status</th>
                             <th className="px-6 py-4 font-semibold text-gray-900 dark:text-white">Oprettet</th>
                             <th className="px-6 py-4 font-semibold text-gray-900 dark:text-white text-right">Handlinger</th>
                         </tr>
@@ -71,17 +73,54 @@ export function AdminUserTable({ users, shares }: { users: User[], shares: Share
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${user.role === 'SYSTEM_ADMIN'
-                                            ? "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-900/30"
-                                            : "bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-zinc-700"
+                                        ? "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-900/30"
+                                        : "bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-zinc-700"
                                         }`}>
                                         {user.role === 'SYSTEM_ADMIN' ? 'Administrator' : 'Medlem'}
                                     </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                    {user.status === 'PENDING' && (
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-amber-50 text-amber-700 border-amber-200">
+                                            Afventer
+                                        </span>
+                                    )}
+                                    {user.status === 'APPROVED' && (
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-green-50 text-green-700 border-green-200">
+                                            Godkendt
+                                        </span>
+                                    )}
+                                    {user.status === 'REJECTED' && (
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-red-50 text-red-700 border-red-200">
+                                            Afvist
+                                        </span>
+                                    )}
                                 </td>
                                 <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
                                     {new Date(user.createdAt).toLocaleDateString('da-DK')}
                                 </td>
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2">
+                                        {user.status === 'PENDING' && (
+                                            <>
+                                                <button
+                                                    onClick={() => updateUserStatus(user.id, 'APPROVED')}
+                                                    className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                    title="Godkend Bruger"
+                                                >
+                                                    <Check className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        if (confirm("Sikker på at du vil afvise denne bruger?")) updateUserStatus(user.id, 'REJECTED')
+                                                    }}
+                                                    className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                                                    title="Afvis Bruger"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                            </>
+                                        )}
                                         <button
                                             onClick={() => toggleAdminRole(user.id, user.role)}
                                             className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"

@@ -30,7 +30,8 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
-  role          String      @default("MEMBER") // ENUM: MEMBER, ANDEL_ADMIN, SYSTEM_ADMIN
+  role          String    @default("MEMBER") // ENUM: MEMBER, ANDEL_ADMIN, SYSTEM_ADMIN
+  status        String    @default("PENDING") // ENUM: PENDING, APPROVED, REJECTED
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
