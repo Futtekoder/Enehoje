@@ -25,7 +25,10 @@ export default async function LoginPage() {
                         <input type="email" name="email" required className="w-full p-2 border rounded" placeholder="din@email.dk" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1">Kodeord</label>
+                        <div className="flex items-center justify-between mb-1">
+                            <label className="block text-sm font-medium">Kodeord</label>
+                            <Link href="/forgot-password" className="text-xs text-blue-600 hover:underline">Glemt adgangskode?</Link>
+                        </div>
                         <input type="password" name="password" required className="w-full p-2 border rounded" placeholder="******" />
                     </div>
                     <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 font-medium">
