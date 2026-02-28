@@ -18,6 +18,8 @@ export async function GET(request: Request) {
         meteoUrl.searchParams.append("timezone", "Europe/Copenhagen");
         // Ensure we get 7 days of forecast
         meteoUrl.searchParams.append("forecast_days", "7");
+        // Ensure wind speed is in m/s (Open-Meteo defaults to km/h)
+        meteoUrl.searchParams.append("wind_speed_unit", "ms");
 
         const meteoRes = await fetch(meteoUrl.toString(), {
             // Next.js Cache - Revalidate every 5 minutes (300 seconds)
