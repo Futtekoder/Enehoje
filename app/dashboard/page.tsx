@@ -30,7 +30,7 @@ export default async function DashboardPage() {
             title: "Ugeplan & Bytte",
             description: "Se årsoversigt, hvem der har huset hvornår, og anmod om bytte.",
             icon: <Calendar className="w-8 h-8 text-blue-600" />,
-            href: "/dashboard/calendar",
+            href: "/calendar",
             color: "bg-blue-50 dark:bg-blue-900/20",
             hoverColor: "group-hover:ring-blue-500"
         },
