@@ -1,6 +1,7 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { MarineWidget } from "@/components/marine-widget"
 
 export default function LandingPage() {
   return (
@@ -35,12 +36,17 @@ export default function LandingPage() {
             <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-white drop-shadow-lg">
               Velkommen til <span className="text-teal-200">Enehøje</span>
             </h1>
-            <p className="mx-auto max-w-[700px] text-blue-100 md:text-xl lg:text-2xl font-light drop-shadow-md">
+            <p className="mx-auto max-w-[700px] text-blue-100 md:text-xl lg:text-2xl font-light drop-shadow-md mb-8">
               Din digitale foreningsplatform. Log ind for at tilgå ugeplaner, dokumenter og fælles beslutninger.
             </p>
+
+            {/* Marine Conditions Widget */}
+            <div className="w-full mt-12 mb-8 animate-fade-in-up delay-200">
+              <MarineWidget />
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm animate-fade-in-up delay-200">
+          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm animate-fade-in-up delay-300">
             <Link
               className="flex-1 inline-flex h-12 items-center justify-center rounded-xl bg-white text-blue-900 text-base font-bold shadow-lg transition-transform hover:scale-105 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               href="/login"
