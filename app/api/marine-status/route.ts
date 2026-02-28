@@ -43,9 +43,45 @@ export async function GET(request: Request) {
 
         const currentWindStatus = getWindStatus(currentWindMs);
 
-        // 4. Temporarily Mock Water Level (Pending DMI Integration)
-        // For right now, assume 0 meter fluctuation from BASE_DEPTH
-        const currentWaterLevelM = 0;
+        // 4. DMI Open Data v2 Integration (No API Key Required)
+        // Station 31417 is Nakskov I (closest tide station to Enehøje)
+        let currentWaterLevelM = 0;
+        let nextLowTide = {
+            time: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+            level_m: 0
+        };
+
+        try {
+            // Fetch Current Tide Observation
+            const obsRes = await fetch("https://opendataapi.dmi.dk/v2/oceanObs/collections/observation/items?stationId=31417&parameterId=sea_reg&limit=1&sortorder=observed,DESC", { next: { revalidate: 300 } });
+            if (obsRes.ok) {
+                const obsData = await obsRes.json();
+                if (obsData.features && obsData.features.length > 0) {
+                    // DMI returns centimeters, divide by 100 for meters
+                    currentWaterLevelM = obsData.features[0].properties.value / 100;
+                }
+            }
+
+            // Fetch Next 12 Hours of Tide Predictions to find Low Tide
+            const now = new Date();
+            const plus12h = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+            const tideRes = await fetch(`https://opendataapi.dmi.dk/v2/oceanObs/collections/tidewater/items?stationId=31417&datetime=${now.toISOString()}/${plus12h.toISOString()}&limit=100`, { next: { revalidate: 300 } });
+
+            if (tideRes.ok) {
+                const tideData = await tideRes.json();
+                if (tideData.features && tideData.features.length > 0) {
+                    // Find the prediction with the lowest value
+                    const lowestPrediction = tideData.features.reduce((min: any, current: any) => current.properties.value < min.properties.value ? current : min, tideData.features[0]);
+                    nextLowTide = {
+                        time: lowestPrediction.properties.predictionTime,
+                        level_m: lowestPrediction.properties.value / 100
+                    };
+                }
+            }
+        } catch (dmiError) {
+            console.error("DMI fetch failed, falling back to 0m fluctuation:", dmiError);
+        }
+
         const calculatedDepthM = BASE_DEPTH + currentWaterLevelM;
         const depthOk = calculatedDepthM >= MIN_REQUIRED_DEPTH;
 
@@ -76,10 +112,7 @@ export async function GET(request: Request) {
 
             sailing_ok: sailingOk,
 
-            next_low_tide: {
-                time: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // Mocking low tide +2 hours
-                level_m: -0.1
-            },
+            next_low_tide: nextLowTide,
 
             forecast: forecast,
 
