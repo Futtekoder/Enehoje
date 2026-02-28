@@ -7,10 +7,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Enums for Calendar
+enum WeekAssignmentType {
+  SHARE
+  COMMON
+  OPENING
+  CLOSING
+  BLOCKED
+}
+
+enum WeekAssignmentSource {
+  GENERATED
+  MANUAL
+}
+
+enum EventType {
+  GENERAL_ASSEMBLY
+  WORK_WEEKEND
+  MEETING
+  MAINTENANCE
+  OTHER
+}
+
 // Models
 
 model Share { // Andel
   id        String   @id @default(uuid())
+  code      String?  @unique // e.g. "FK", "OT", "AF", "KP", "HT"
   name      String
   color     String?
   voteWeight Decimal @default(1.0)
@@ -18,6 +41,8 @@ model Share { // Andel
 
   users     User[]
   weeks     Week[]
+  weekAssignments WeekAssignment[]
+  sequenceItems   ShareSequenceItem[]
   
   requestedSwaps SwapRequest[] @relation("RequestingShare")
   receivedSwaps  SwapRequest[] @relation("ReceivingShare")
@@ -243,4 +268,58 @@ model PasswordResetToken {
   expires DateTime
 
   @@unique([email, token])
+}
+
+// Calendar System v1 Models
+
+model WeekAssignment {
+  id          String   @id @default(cuid())
+  year        Int
+  weekNumber  Int // 1..52/53
+  type        WeekAssignmentType
+  
+  shareId     String? // FK/OT/AF/KP/HT mapped when type=SHARE
+  share       Share?  @relation(fields: [shareId], references: [id])
+
+  note        String?
+  isLocked    Boolean @default(false) // true for Ascension common week
+  source      WeekAssignmentSource @default(GENERATED)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([year, weekNumber])
+  @@index([year])
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  type        EventType
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  allDay      Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([startDate])
+}
+
+model CalendarSettings {
+  id                          String  @id @default(cuid())
+  anchorShareIndex            Int     @default(0) // start index in base sequence for week 1
+  includeHolidaysInIcs        Boolean @default(true)
+  includeWeekAssignmentsInIcs Boolean @default(true)
+}
+
+model ShareSequenceItem {
+  id        String @id @default(cuid())
+  position  Int
+  shareId   String
+  share     Share  @relation(fields: [shareId], references: [id])
+
+  @@unique([position])
+  @@index([position])
 }
