@@ -4,11 +4,11 @@ const prisma = new PrismaClient()
 
 async function main() {
     const shares = [
-        { name: 'Andel 1', color: 'bg-red-500' },
-        { name: 'Andel 2', color: 'bg-blue-500' },
-        { name: 'Andel 3', color: 'bg-green-500' },
-        { name: 'Andel 4', color: 'bg-yellow-500' },
-        { name: 'Andel 5', color: 'bg-purple-500' },
+        { name: 'Andel FK', color: 'bg-red-500' },
+        { name: 'Andel HT', color: 'bg-blue-500' },
+        { name: 'Andel OT', color: 'bg-green-500' },
+        { name: 'Andel KP', color: 'bg-yellow-500' },
+        { name: 'Andel AF', color: 'bg-purple-500' },
     ]
 
     for (let i = 0; i < shares.length; i++) {
