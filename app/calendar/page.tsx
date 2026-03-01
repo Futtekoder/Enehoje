@@ -120,7 +120,7 @@ export default function CalendarMonthPage() {
     const isActiveCommon = activeWeekAssignment?.type === 'HOLIDAY' || activeOwner === 'FÆLLES' || activeWeekAssignment?.isLocked
 
     return (
-        <div className="container mx-auto p-4 md:p-6 max-w-7xl max-w-full space-y-6">
+        <div className="container mx-auto p-4 md:p-6 max-w-5xl space-y-6">
 
             {/* Header / Current Week Highlight */}
             <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border p-6 flex flex-col md:flex-row justify-between items-center gap-6">
