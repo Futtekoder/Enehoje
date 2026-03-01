@@ -56,16 +56,20 @@ export default function CalendarMonthPage() {
 
         for (let i = 0; i < 7; i++) {
             formattedDate = format(day, dateFormat)
+            const isoDateString = format(day, 'yyyy-MM-dd')
             const cloneDay = day
 
             // Highlight checks
             const isToday = isSameDay(day, new Date())
             const isCurrentMonth = isSameMonth(day, monthStart)
 
+            // See if there's a holiday for this day
+            const holiday = calData?.holidays?.find((h: any) => h.date === isoDateString)
+
             days.push(
                 <div
                     key={day.toString()}
-                    className={`min-h-[100px] md:min-h-[120px] p-2 border-r border-b relative ${!isCurrentMonth ? 'bg-gray-50/50 dark:bg-zinc-800/20 text-gray-400' : 'bg-white dark:bg-zinc-900'
+                    className={`min-h-[80px] md:min-h-[96px] p-2 border-r border-b relative flex flex-col ${!isCurrentMonth ? 'bg-gray-50/50 dark:bg-zinc-800/20 text-gray-400' : 'bg-white dark:bg-zinc-900'
                         } ${isToday ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}`}
                 >
                     <div className="flex justify-between items-start">
@@ -73,6 +77,13 @@ export default function CalendarMonthPage() {
                             {formattedDate}
                         </span>
                     </div>
+
+                    {/* Render Holiday Pill if one exists */}
+                    {holiday && (
+                        <div className="mt-1 bg-[#00897B] text-white text-[10px] leading-tight font-semibold px-1.5 py-0.5 rounded-sm line-clamp-2" title={holiday.name}>
+                            {holiday.name}
+                        </div>
+                    )}
                 </div>
             )
             day = addDays(day, 1)
