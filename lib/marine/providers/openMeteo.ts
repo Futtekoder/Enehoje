@@ -4,7 +4,7 @@ export async function fetchOpenMeteoWindAndForecast({ lat, lon }: { lat: number;
     meteoUrl.searchParams.append("longitude", lon.toString());
     meteoUrl.searchParams.append("current", "wind_speed_10m,wind_direction_10m");
     meteoUrl.searchParams.append("hourly", "wind_speed_10m");
-    meteoUrl.searchParams.append("daily", "wind_speed_10m_max,weather_code,temperature_2m_max");
+    meteoUrl.searchParams.append("daily", "wind_speed_10m_max,weather_code,temperature_2m_max,wind_direction_10m_dominant");
     meteoUrl.searchParams.append("timezone", "Europe/Copenhagen");
     meteoUrl.searchParams.append("forecast_days", "7");
     meteoUrl.searchParams.append("wind_speed_unit", "ms");
@@ -33,7 +33,8 @@ export async function fetchOpenMeteoWindAndForecast({ lat, lon }: { lat: number;
         date: t,
         maxWindMs: data.daily.wind_speed_10m_max[i],
         weatherCode: data.daily.weather_code[i],
-        maxTempC: data.daily.temperature_2m_max[i]
+        maxTempC: data.daily.temperature_2m_max[i],
+        windDirectionDominantDeg: data.daily.wind_direction_10m_dominant[i]
     })) || [];
 
     return { current, hourly, daily7d };

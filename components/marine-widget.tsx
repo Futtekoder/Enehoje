@@ -89,6 +89,13 @@ export function MarineWidget() {
         return "UTILGÆNGELIGT LIGE NU";
     }
 
+    const getCompassDirection = (deg: number | null | undefined) => {
+        if (deg === null || deg === undefined) return "-";
+        const val = Math.floor((deg / 45) + 0.5);
+        const arr = ["N", "NØ", "Ø", "SØ", "S", "SV", "V", "NV"];
+        return arr[(val % 8)];
+    }
+
     return (
         <Card className="w-full mx-auto shadow-2xl border-white/20 dark:border-white/10 overflow-hidden bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-2xl">
             {/* Header / Big Indicator - Compact */}
@@ -119,7 +126,7 @@ export function MarineWidget() {
                             </div>
                             <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-0.5 font-medium">
                                 <Navigation2 className="h-3 w-3" style={{ transform: `rotate(${data.windDirectionDeg || 0}deg)` }} />
-                                <span>{data.windDirectionDeg || '-'}°</span>
+                                <span>{getCompassDirection(data.windDirectionDeg)}</span>
                             </div>
                         </div>
                     </div>
@@ -191,6 +198,12 @@ export function MarineWidget() {
                                             {Math.round(day.maxWindMs)}
                                             <span className="text-[7px] font-bold opacity-80">m/s</span>
                                         </span>
+                                        {day.windDirectionDominantDeg !== undefined && (
+                                            <span className="text-[8px] font-semibold text-gray-400 -mt-0.5 mb-0.5 flex items-center gap-0.5">
+                                                <Navigation2 className="h-2 w-2" style={{ transform: `rotate(${day.windDirectionDominantDeg}deg)` }} />
+                                                {getCompassDirection(day.windDirectionDominantDeg)}
+                                            </span>
+                                        )}
                                         {day.maxTempC !== undefined && (
                                             <span className="text-[9px] font-semibold mt-0.5 opacity-90">
                                                 {Math.round(day.maxTempC)}°

@@ -11,8 +11,15 @@ const BASE_DEPTH_M = Number(process.env.BASE_DEPTH ?? 1.35); // calibrated for E
 const MIN_DEPTH_M = Number(process.env.MIN_REQUIRED_DEPTH ?? 1.0);
 const MAX_WIND_MS = Number(process.env.MAX_ALLOWED_WIND ?? 13);
 
-function windLevel(w: number | null): "SAFE" | "CAUTION" | "NO_GO" | "UNKNOWN" {
+function windLevel(w: number | null, deg: number | null = null): "SAFE" | "CAUTION" | "NO_GO" | "UNKNOWN" {
     if (w == null) return "UNKNOWN";
+
+    // Enehøje Northeast Docking Constraint
+    // If wind is from NE (10° to 80°) and > 10 m/s, docking is unsafe.
+    if (deg !== null && deg >= 10 && deg <= 80 && w >= 10) {
+        return "NO_GO";
+    }
+
     if (w >= MAX_WIND_MS) return "NO_GO";
     if (w >= 11) return "CAUTION";
     return "SAFE";
@@ -60,12 +67,13 @@ export async function getMarineStatus(params?: { lat?: number; lon?: number; now
         const bestWindowToday = computeBestWindowToday(hourlyPoints, now);
 
         const windNowMs = wind.current?.windMs ?? null;
+        const windDirectionDeg = wind.current?.windDirectionDeg ?? null;
         const depthNowM = (() => {
             const wl = water.currentLevelM;
             return wl == null ? null : Number((BASE_DEPTH_M + wl).toFixed(2));
         })();
 
-        const windStatus = windLevel(windNowMs);
+        const windStatus = windLevel(windNowMs, windDirectionDeg);
         const depthStatus = depthLevel(depthNowM);
         const sailingStatus = combine(windStatus, depthStatus);
 
@@ -93,7 +101,8 @@ export async function getMarineStatus(params?: { lat?: number; lon?: number; now
             forecast7d: wind.daily7d.map((d: any) => ({
                 date: d.date,
                 maxWindMs: d.maxWindMs,
-                windStatus: windLevel(d.maxWindMs),
+                windDirectionDominantDeg: d.windDirectionDominantDeg,
+                windStatus: windLevel(d.maxWindMs, d.windDirectionDominantDeg),
                 weatherCode: d.weatherCode,
                 maxTempC: d.maxTempC,
                 minDepthM: BASE_DEPTH_M, // Fallback base depth
