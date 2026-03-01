@@ -124,8 +124,8 @@ export function MarineWidget() {
                                 <span className="text-lg font-black leading-none">{data.windNowMs !== null ? data.windNowMs.toFixed(1) : '-'}</span>
                                 <span className="text-xs text-gray-500 font-medium">m/s</span>
                             </div>
-                            <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-0.5 font-medium">
-                                <Navigation2 className="h-3 w-3" style={{ transform: `rotate(${data.windDirectionDeg || 0}deg)` }} />
+                            <div className="flex items-center gap-1 text-xs font-black text-gray-700 dark:text-gray-300 mt-1">
+                                <Navigation2 className="h-3 w-3 text-gray-500" style={{ transform: `rotate(${data.windDirectionDeg || 0}deg)` }} />
                                 <span>{getCompassDirection(data.windDirectionDeg)}</span>
                             </div>
                         </div>
