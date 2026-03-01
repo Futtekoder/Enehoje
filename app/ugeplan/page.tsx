@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import useSWR from "swr"
-import { Calendar as CalendarIcon, List, Clock, Filter, ChevronLeft, ChevronRight, Lock, UserPlus, Info, ArrowLeft } from "lucide-react"
+import { Calendar as CalendarIcon, List, Clock, Filter, ChevronLeft, ChevronRight, Lock, UserPlus, Info, ArrowLeft, ArrowRightLeft } from "lucide-react"
 import Link from "next/link"
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
@@ -70,13 +70,23 @@ export default function CalendarPage() {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                <Link
-                    href="/calendar"
-                    className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800 dark:text-gray-300 bg-white dark:bg-zinc-900 px-4 py-2 rounded-full transition-colors shadow-sm"
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                    Tilbage til kalender
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <Link
+                        href="/calendar"
+                        className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800 dark:text-gray-300 bg-white dark:bg-zinc-900 px-4 py-2 rounded-full transition-colors shadow-sm"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        Tilbage til kalender
+                    </Link>
+
+                    <Link
+                        href="/dashboard/swap"
+                        className="flex items-center gap-2 text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-full transition-colors shadow-sm shadow-orange-500/20"
+                    >
+                        <ArrowRightLeft className="h-4 w-4" />
+                        Opret Bytteønske
+                    </Link>
+                </div>
 
                 <a
                     href={`/api/calendar.ics?year=${year}`}
