@@ -105,32 +105,40 @@ export async function acceptSwap(swapId: string) {
         })
 
         // Assign Week A (originally Requestor's) to Receiver
-        await tx.week.upsert({
+        await tx.weekAssignment.upsert({
             where: { year_weekNumber: { year: swap.year, weekNumber: swap.weekA } },
             create: {
                 year: swap.year,
                 weekNumber: swap.weekA,
                 shareId: swap.receivingShareId,
-                source: 'SWAP'
+                type: 'SHARE',
+                source: 'MANUAL',
+                isLocked: true // Lock to prevent accidental regeneration overwrites
             },
             update: {
                 shareId: swap.receivingShareId,
-                source: 'SWAP'
+                type: 'SHARE',
+                source: 'MANUAL',
+                isLocked: true
             }
         })
 
         // Assign Week B (originally Receiver's) to Requestor
-        await tx.week.upsert({
+        await tx.weekAssignment.upsert({
             where: { year_weekNumber: { year: swap.year, weekNumber: swap.weekB } },
             create: {
                 year: swap.year,
                 weekNumber: swap.weekB,
                 shareId: swap.requestingShareId,
-                source: 'SWAP'
+                type: 'SHARE',
+                source: 'MANUAL',
+                isLocked: true // Lock to prevent accidental regeneration overwrites
             },
             update: {
                 shareId: swap.requestingShareId,
-                source: 'SWAP'
+                type: 'SHARE',
+                source: 'MANUAL',
+                isLocked: true
             }
         })
     })
