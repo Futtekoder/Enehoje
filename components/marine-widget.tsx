@@ -192,23 +192,29 @@ export function MarineWidget() {
 
                                 return (
                                     <div key={day.date} className={`flex flex-col items-center justify-center py-2 px-1 rounded-md border ${getStatusColors(day.windStatus)}`}>
-                                        <span className="text-[9px] font-bold uppercase mb-0.5 opacity-80">{dayName}</span>
-                                        <WeatherIcon code={day.weatherCode} className="h-5 w-5 my-1 opacity-90" />
-                                        <span className="font-extrabold text-[10px] flex items-baseline gap-0.5">
+                                        <span className="text-[9px] font-bold uppercase mb-1 opacity-70">{dayName}</span>
+
+                                        {/* Emphasized Wind Stats */}
+                                        <span className="font-extrabold text-sm flex items-baseline gap-0.5 tracking-tight">
                                             {Math.round(day.maxWindMs)}
-                                            <span className="text-[7px] font-bold opacity-80">m/s</span>
+                                            <span className="text-[8px] font-bold opacity-80">m/s</span>
                                         </span>
                                         {day.windDirectionDominantDeg !== undefined && (
-                                            <span className="text-[8px] font-semibold text-gray-400 -mt-0.5 mb-0.5 flex items-center gap-0.5">
-                                                <Navigation2 className="h-2 w-2" style={{ transform: `rotate(${day.windDirectionDominantDeg}deg)` }} />
+                                            <span className="text-[10px] font-black text-gray-700 dark:text-gray-300 mb-1.5 flex items-center gap-0.5">
+                                                <Navigation2 className="h-3 w-3" style={{ transform: `rotate(${day.windDirectionDominantDeg}deg)` }} />
                                                 {getCompassDirection(day.windDirectionDominantDeg)}
                                             </span>
                                         )}
-                                        {day.maxTempC !== undefined && (
-                                            <span className="text-[9px] font-semibold mt-0.5 opacity-90">
-                                                {Math.round(day.maxTempC)}°
-                                            </span>
-                                        )}
+
+                                        {/* De-emphasized Weather/Temp */}
+                                        <div className="flex items-center gap-1 opacity-50">
+                                            <WeatherIcon code={day.weatherCode} className="h-3 w-3" />
+                                            {day.maxTempC !== undefined && (
+                                                <span className="text-[8px] font-semibold">
+                                                    {Math.round(day.maxTempC)}°
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 )
                             })}
