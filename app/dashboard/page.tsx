@@ -27,7 +27,7 @@ export default async function DashboardPage() {
 
     const features = [
         {
-            title: "Ugeplan & Bytte",
+            title: "Kalender & Bytte",
             description: "Se årsoversigt, hvem der har huset hvornår, og anmod om bytte.",
             icon: <Calendar className="w-8 h-8 text-blue-600" />,
             href: "/calendar",

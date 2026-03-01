@@ -42,7 +42,7 @@ export default function LandingPage() {
                   Velkommen til <br className="hidden lg:block" /><span className="text-teal-300">Enehøje</span>
                 </h1>
                 <p className="max-w-[600px] text-blue-50 md:text-xl font-medium drop-shadow-md">
-                  Din digitale foreningsplatform. Log ind for at tilgå ugeplaner, dokumenter og fælles beslutninger.
+                  Din digitale foreningsplatform. Log ind for at tilgå kalendere, dokumenter og fælles beslutninger.
                 </p>
               </div>
 
