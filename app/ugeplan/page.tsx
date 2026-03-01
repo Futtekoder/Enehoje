@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import useSWR from "swr"
-import { Calendar as CalendarIcon, List, Clock, Filter, ChevronLeft, ChevronRight, Lock, UserPlus, Info } from "lucide-react"
+import { Calendar as CalendarIcon, List, Clock, Filter, ChevronLeft, ChevronRight, Lock, UserPlus, Info, ArrowLeft } from "lucide-react"
+import Link from "next/link"
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -67,8 +68,16 @@ export default function CalendarPage() {
                 </div>
             </div>
 
-            {/* ICS Feed Button */}
-            <div className="flex justify-end mb-6">
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <Link
+                    href="/calendar"
+                    className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800 dark:text-gray-300 bg-white dark:bg-zinc-900 px-4 py-2 rounded-full transition-colors shadow-sm"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    Tilbage til kalender
+                </Link>
+
                 <a
                     href={`/api/calendar.ics?year=${year}`}
                     className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 px-4 py-2 rounded-full transition-colors border border-blue-100 dark:border-blue-900/50"
