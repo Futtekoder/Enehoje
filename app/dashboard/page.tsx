@@ -4,6 +4,7 @@ import { redirect } from "next/navigation"
 import { prisma } from "@/lib/db"
 import Link from "next/link"
 import { Calendar, MessageSquare, FileText, Vote, LogOut, ArrowRight } from "lucide-react"
+import { MarineWidget } from "@/components/marine-widget"
 
 export default async function DashboardPage() {
     const session = await auth()
@@ -70,6 +71,11 @@ export default async function DashboardPage() {
                 <p className="text-gray-500 dark:text-gray-400 mt-2">
                     Du er logget ind som <span className="font-semibold text-blue-600 dark:text-blue-400">{user?.share?.name || "Gæst"}</span>
                 </p>
+            </div>
+
+            {/* Marine Widget for Logged In Users */}
+            <div className="w-full">
+                <MarineWidget />
             </div>
 
             {/* Feature Grid */}

@@ -1,9 +1,16 @@
-
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { MarineWidget } from "@/components/marine-widget"
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await auth();
+
+  if (session?.user) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* 
