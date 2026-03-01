@@ -90,7 +90,7 @@ export default function CalendarPage() {
             ) : view === "LIST" ? (
                 <ListView data={data} isAdmin={isAdmin} onEditWeek={setEditingWeek} />
             ) : (
-                <MonthView data={data} year={year} isAdmin={isAdmin} onEditWeek={setEditingWeek} />
+                <YearGridView data={data} year={year} isAdmin={isAdmin} onEditWeek={setEditingWeek} />
             )}
 
             {editingWeek && (
@@ -175,71 +175,54 @@ function ListView({ data, isAdmin, onEditWeek }: { data: any, isAdmin: boolean, 
     )
 }
 
-function MonthView({ data, year, isAdmin, onEditWeek }: { data: any, year: number, isAdmin: boolean, onEditWeek: (w: any) => void }) {
-    // For MonthView, we'll build a simpler visual grid representation mapping week numbers.
-    // True month-grid rendering requires a complex localized date grid library (like date-fns or react-big-calendar).
-    // Given the specifications mostly revolve around ISO weeks, an "ISO Week Ribbon/Grid" is actually more authentic.
-
-    // Group weeks into quarters for a nicer display
-    const quarters = [
-        data.weekAssignments?.slice(0, 13) || [],
-        data.weekAssignments?.slice(13, 26) || [],
-        data.weekAssignments?.slice(26, 39) || [],
-        data.weekAssignments?.slice(39) || []
-    ]
+function YearGridView({ data, year, isAdmin, onEditWeek }: { data: any, year: number, isAdmin: boolean, onEditWeek: (w: any) => void }) {
+    // Present the entire year in a single, tightly packed continuous grid
+    const weeks = data.weekAssignments || []
 
     return (
         <div className="space-y-8">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                {quarters.map((quarterWeeks: any[], qIndex: number) => (
-                    <div key={qIndex} className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border">
-                        <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">
-                            Kvartal {qIndex + 1}
-                        </h3>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                            {quarterWeeks.map((wa: any) => (
-                                <div
-                                    key={wa.weekNumber}
-                                    onClick={() => isAdmin ? onEditWeek(wa) : null}
-                                    className={`relative p-3 rounded-xl border flex flex-col justify-between aspect-square transition-all ${isAdmin ? 'cursor-pointer hover:shadow-md hover:ring-2 hover:ring-blue-500' : ''}
-                                        ${wa.type === 'COMMON' ? 'bg-indigo-50/50 border-indigo-100 dark:bg-indigo-900/10 dark:border-indigo-900/30' :
-                                            wa.type === 'SHARE' ? 'bg-white border-gray-100 dark:bg-zinc-800/50 dark:border-zinc-700/50' :
-                                                'bg-gray-50 border-dashed dark:bg-zinc-900'}
-                                    `}
-                                >
-                                    {/* Top: Week Number & Locks */}
-                                    <div className="flex justify-between items-start">
-                                        <span className="text-2xl font-black text-gray-300 dark:text-gray-600 leading-none">
-                                            {wa.weekNumber}
-                                        </span>
-                                        {wa.isLocked && <Lock className="h-3 w-3 text-amber-500" />}
-                                    </div>
+            <div className="bg-white dark:bg-zinc-900 p-4 md:p-6 rounded-2xl shadow-sm border">
+                <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-10 xl:grid-cols-13 gap-2">
+                    {weeks.map((wa: any) => (
+                        <div
+                            key={wa.weekNumber}
+                            onClick={() => isAdmin ? onEditWeek(wa) : null}
+                            className={`relative p-2 rounded-xl border flex flex-col justify-between aspect-square transition-all ${isAdmin ? 'cursor-pointer hover:shadow-md hover:ring-2 hover:ring-blue-500' : ''}
+                                ${wa.type === 'COMMON' ? 'bg-indigo-50/50 border-indigo-100 dark:bg-indigo-900/10 dark:border-indigo-900/30' :
+                                    wa.type === 'SHARE' ? 'bg-white border-gray-100 dark:bg-zinc-800/50 dark:border-zinc-700/50' :
+                                        'bg-gray-50 border-dashed dark:bg-zinc-900'}
+                            `}
+                        >
+                            {/* Top: Week Number & Locks */}
+                            <div className="flex justify-between items-start">
+                                <span className="text-xl font-black text-gray-300 dark:text-gray-600 leading-none">
+                                    {wa.weekNumber}
+                                </span>
+                                {wa.isLocked && <Lock className="h-2.5 w-2.5 text-amber-500" />}
+                            </div>
 
-                                    {/* Bottom: Share Indicator */}
-                                    <div className="mt-auto">
-                                        {wa.type === 'SHARE' && wa.share ? (
-                                            <div className="flex flex-col">
-                                                <div className={`w-8 h-1.5 rounded-full mb-1.5 ${wa.share.color || 'bg-blue-500'}`}></div>
-                                                <span className="text-sm font-bold tracking-tight">{wa.share.code || wa.share.name}</span>
-                                            </div>
-                                        ) : wa.type === 'COMMON' ? (
-                                            <div className="flex flex-col text-indigo-600 dark:text-indigo-400">
-                                                <UserPlus className="h-4 w-4 mb-1" />
-                                                <span className="text-xs font-black tracking-tight leading-tight">FÆLLES</span>
-                                            </div>
-                                        ) : (
-                                            <span className="text-xs font-semibold text-gray-400">{wa.type}</span>
-                                        )}
+                            {/* Bottom: Share Indicator */}
+                            <div className="mt-auto">
+                                {wa.type === 'SHARE' && wa.share ? (
+                                    <div className="flex flex-col">
+                                        <div className={`w-full h-1.5 rounded-full mb-1 ${wa.share.color || 'bg-blue-500'}`}></div>
+                                        <span className="text-xs font-bold tracking-tight">{wa.share.code || wa.share.name}</span>
                                     </div>
+                                ) : wa.type === 'COMMON' ? (
+                                    <div className="flex flex-col text-indigo-600 dark:text-indigo-400">
+                                        <span className="text-[10px] font-black tracking-tighter leading-tight bg-indigo-100 dark:bg-indigo-900/50 px-1 py-0.5 rounded text-center">FÆLLES</span>
+                                    </div>
+                                ) : (
+                                    <span className="text-[10px] font-semibold text-gray-400">{wa.type}</span>
+                                )}
+                            </div>
 
-                                    {wa.source === 'MANUAL' && (
-                                        <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-purple-500 ring-2 ring-white dark:ring-zinc-900"></div>
-                                    )}
-                                </div>
-                            ))}
+                            {wa.source === 'MANUAL' && (
+                                <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-purple-500 ring-2 ring-white dark:ring-zinc-900"></div>
+                            )}
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
 
             {/* Event/Holiday Legend (Bottom) */}
