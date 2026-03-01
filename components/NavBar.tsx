@@ -49,7 +49,7 @@ export async function NavBar() {
                     </div>
                     {/* SignOut button would ideally be a server action or client component, 
                 but for simplicity we can link to api/auth/signout or just let NextAuth handle it on the dashboard */}
-                    <Link href="/api/auth/signout" className="text-gray-500 hover:text-red-600">
+                    <Link href="/signout" className="text-gray-500 hover:text-red-600">
                         <LogOut size={18} />
                     </Link>
                 </div>
