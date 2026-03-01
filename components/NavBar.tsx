@@ -10,13 +10,13 @@ export async function NavBar() {
     return (
         <nav className="bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
             <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-                <Link href="/dashboard" className="font-bold text-xl flex items-center gap-2">
+                <Link href="/" className="font-bold text-xl flex items-center gap-2">
                     <span>🏝️</span>
                     <span>Ø-Forening</span>
                 </Link>
 
                 <div className="flex items-center gap-6">
-                    <Link href="/dashboard" className="flex items-center gap-2 hover:text-blue-600 transition text-sm font-medium">
+                    <Link href="/" className="flex items-center gap-2 hover:text-blue-600 transition text-sm font-medium">
                         <Home size={18} />
                         <span className="hidden md:inline">Oversigt</span>
                     </Link>
