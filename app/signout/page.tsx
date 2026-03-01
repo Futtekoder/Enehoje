@@ -16,13 +16,13 @@ export default async function SignOutPage() {
             <div className="w-full max-w-md bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-white/20 dark:border-zinc-800 p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden my-8">
 
                 {/* Decorative background flares */}
-                <div className="absolute -top-32 -right-32 w-64 h-64 bg-red-500/10 blur-3xl rounded-full pointer-events-none"></div>
-                <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-orange-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                <div className="absolute -top-32 -right-32 w-64 h-64 bg-blue-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-teal-500/10 blur-3xl rounded-full pointer-events-none"></div>
 
                 <div className="relative z-10 flex flex-col items-center text-center">
 
                     {/* Header Icon */}
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-lg shadow-red-500/30 mb-6">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6">
                         <LogOut className="w-8 h-8 text-white ml-1" />
                     </div>
 
@@ -38,7 +38,8 @@ export default async function SignOutPage() {
                     >
                         {/* Submit Button */}
                         <div className="pt-2">
-                            <button type="submit" className="w-full group relative inline-flex items-center justify-center gap-2 px-8 py-4 font-bold text-white transition-all duration-200 bg-red-600 rounded-xl hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 shadow-lg shadow-red-500/30">
+                            <button type="submit" className="w-full group relative inline-flex items-center justify-center gap-2 px-8 py-4 font-bold text-white transition-all duration-200 bg-gray-900 dark:bg-black rounded-xl hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                                <div className="absolute inset-0 w-full h-full rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-blue-400 via-teal-400 to-blue-500 blur-lg"></div>
                                 <span className="relative z-10 flex items-center gap-2 text-lg text-white">
                                     Ja, log mig ud
                                 </span>
