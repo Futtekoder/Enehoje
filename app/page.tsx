@@ -164,12 +164,6 @@ export default async function LandingPage() {
           </div>
         </div>
 
-        {/* Footer Link (Less obtrusive) */}
-        <div className="absolute bottom-6 w-full text-center z-10">
-          <Link href="/legal" className="text-xs text-white/60 hover:text-white hover:underline transition-colors">
-            Vedtægter & Husorden
-          </Link>
-        </div>
       </section>
     </div>
   )
