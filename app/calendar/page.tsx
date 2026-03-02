@@ -120,114 +120,129 @@ export default function UnifiedCalendarPage() {
     const isActiveCommon = activeWeekAssignment?.type === 'HOLIDAY' || activeOwner === 'FÆLLES' || activeWeekAssignment?.isLocked
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-6xl space-y-8">
-            {/* Header Area */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
-                        <CalendarIcon className="h-8 w-8 text-blue-600 dark:text-blue-500" />
-                        Enehøje Kalender
-                    </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">
-                        Officiel huskalender og andelsfordeling for {year}
-                    </p>
-                </div>
+        <div className="container mx-auto px-4 py-8 max-w-7xl relative min-h-[80vh]">
 
-                <div className="flex flex-wrap items-center gap-3 bg-white dark:bg-zinc-900 p-2 rounded-xl shadow-sm border">
-                    <div className="flex items-center gap-1 border-r pr-3 mr-1">
-                        <button
-                            onClick={() => { setYear(y => y - 1); setCurrentDate(subMonths(currentDate, 12)) }}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md transition-colors"
-                        >
-                            <ChevronLeft className="h-4 w-4" />
-                        </button>
-                        <span className="font-bold w-16 text-center">{year}</span>
-                        <button
-                            onClick={() => { setYear(y => y + 1); setCurrentDate(addMonths(currentDate, 12)) }}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md transition-colors"
-                        >
-                            <ChevronRight className="h-4 w-4" />
-                        </button>
+            {/* Sassy Background Flares */}
+            <div className="fixed -top-32 -right-32 w-96 h-96 bg-orange-500/20 blur-[100px] rounded-full pointer-events-none -z-10"></div>
+            <div className="fixed -bottom-48 -left-32 w-[500px] h-[500px] bg-blue-500/20 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-500/5 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+
+            <div className="space-y-8 relative z-10">
+
+                {/* Header Area */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl border border-white/40 dark:border-zinc-800/60 p-6 rounded-3xl shadow-xl">
+                    <div>
+                        <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                                <CalendarIcon className="h-6 w-6 text-white" />
+                            </div>
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300">
+                                Enehøje Kalender
+                            </span>
+                        </h1>
+                        <p className="text-gray-500 dark:text-gray-400 mt-2 font-medium">
+                            Officiel huskalender og andelsfordeling for {year}
+                        </p>
                     </div>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex flex-wrap items-center gap-4">
+                        <div className="flex items-center gap-1 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-md p-1.5 rounded-2xl shadow-sm border border-white/50 dark:border-zinc-700/50">
+                            <button
+                                onClick={() => { setYear(y => y - 1); setCurrentDate(subMonths(currentDate, 12)) }}
+                                className="p-2hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-xl transition-colors"
+                            >
+                                <ChevronLeft className="h-5 w-5" />
+                            </button>
+                            <span className="font-black w-16 text-center text-lg">{year}</span>
+                            <button
+                                onClick={() => { setYear(y => y + 1); setCurrentDate(addMonths(currentDate, 12)) }}
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-xl transition-colors"
+                            >
+                                <ChevronRight className="h-5 w-5" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <Link
+                        href="/dashboard/swap"
+                        className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 font-bold text-white transition-all duration-200 bg-gray-900 dark:bg-white dark:text-gray-900 rounded-2xl hover:bg-gray-800 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 shadow-xl"
+                    >
+                        <div className="absolute inset-0 w-full h-full rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 blur-md -z-10"></div>
+                        <ArrowRightLeft className="h-5 w-5" />
+                        Opret Bytteønske
+                    </Link>
+
+                    <div className="flex items-center gap-2 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl p-1.5 rounded-2xl border border-white/40 dark:border-zinc-800/60 shadow-sm">
                         <button
                             onClick={() => setView("MONTH")}
-                            className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-all flex items-center gap-2 ${view === 'MONTH' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-600 dark:text-gray-300'}`}
+                            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${view === 'MONTH' ? 'bg-white dark:bg-zinc-800 text-blue-600 shadow-sm' : 'hover:bg-gray-50 dark:hover:bg-zinc-800/50 text-gray-500 dark:text-gray-400'}`}
                         >
                             <CalendarIcon className="h-4 w-4" />
                             Overblik
                         </button>
                         <button
                             onClick={() => setView("LIST")}
-                            className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-all flex items-center gap-2 ${view === 'LIST' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-600 dark:text-gray-300'}`}
+                            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${view === 'LIST' ? 'bg-white dark:bg-zinc-800 text-blue-600 shadow-sm' : 'hover:bg-gray-50 dark:hover:bg-zinc-800/50 text-gray-500 dark:text-gray-400'}`}
                         >
                             <List className="h-4 w-4" />
                             Liste
                         </button>
                     </div>
                 </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <Link
-                    href="/dashboard/swap"
-                    className="flex items-center gap-2 text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 px-5 py-2.5 rounded-full transition-colors shadow-sm shadow-orange-500/20"
-                >
-                    <ArrowRightLeft className="h-4 w-4" />
-                    Opret Bytteønske
-                </Link>
+                {/* Main Content Areas */}
+                {isLoading ? (
+                    <div className="h-96 flex items-center justify-center bg-white/40 dark:bg-zinc-900/40 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-zinc-800/50">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600"></div>
+                    </div>
+                ) : view === "LIST" ? (
+                    <ListView data={calData} isAdmin={isAdmin} onEditWeek={setEditingWeek} />
+                ) : (
+                    <div className="flex flex-col lg:flex-row gap-8 items-start relative pb-12">
 
-                <a
-                    href={`/api/calendar.ics?year=${year}`}
-                    className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 px-4 py-2 rounded-full transition-colors border border-blue-100 dark:border-blue-900/50"
-                >
-                    <CalendarIcon className="h-4 w-4" />
-                    Abonnér i kalender (ICS)
-                </a>
-            </div>
+                        {/* ==================================
+                            LEFT SIDE: Compact Monthly View (Top on mobile, left on desktop)
+                        =================================== */}
+                        <div className="w-full lg:w-1/3 xl:w-[400px] shrink-0 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl rounded-3xl shadow-xl border border-white/40 dark:border-zinc-800/60 overflow-hidden lg:sticky lg:top-8">
 
-            {/* Main Content Areas */}
-            {isLoading ? (
-                <div className="h-96 flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                </div>
-            ) : view === "LIST" ? (
-                <ListView data={calData} isAdmin={isAdmin} onEditWeek={setEditingWeek} />
-            ) : (
-                <div className="space-y-8">
-
-                    {/* Compact Secondary Monthly View */}
-                    <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border overflow-hidden max-w-2xl mx-auto hidden md:block">
-                        <div className="p-3 border-b bg-gray-50/50 dark:bg-zinc-800/20 flex justify-between items-center">
-                            <button onClick={handleToday} className="text-[11px] font-semibold text-gray-500 hover:bg-gray-100 px-2 py-1 rounded">I dag</button>
-                            <div className="flex gap-2 items-center">
-                                <button onClick={handlePreviousMonth}><ChevronLeft className="h-4 w-4" /></button>
-                                <span className="font-bold text-sm min-w-[100px] text-center capitalize">{format(currentDate, 'MMMM', { locale: da })}</span>
-                                <button onClick={handleNextMonth}><ChevronRight className="h-4 w-4" /></button>
+                            <div className="p-4 border-b border-white/20 dark:border-zinc-800/50 bg-white/40 dark:bg-black/10 flex justify-between items-center backdrop-blur-sm">
+                                <button onClick={handleToday} className="text-xs font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white bg-white/50 dark:bg-zinc-800/50 hover:bg-white dark:hover:bg-zinc-700 px-3 py-1.5 rounded-lg transition-colors shadow-sm">
+                                    I dag
+                                </button>
+                                <div className="flex gap-1 items-center bg-white/50 dark:bg-zinc-800/50 rounded-lg p-0.5 shadow-sm">
+                                    <button onClick={handlePreviousMonth} className="p-1.5 hover:bg-white dark:hover:bg-zinc-700 rounded-md transition-colors"><ChevronLeft className="h-4 w-4" /></button>
+                                    <span className="font-black text-sm min-w-[100px] text-center capitalize">{format(currentDate, 'MMMM', { locale: da })}</span>
+                                    <button onClick={handleNextMonth} className="p-1.5 hover:bg-white dark:hover:bg-zinc-700 rounded-md transition-colors"><ChevronRight className="h-4 w-4" /></button>
+                                </div>
                             </div>
-                            <div className="w-[42px]"></div>
-                        </div>
-                        <div className="flex w-full bg-gray-50 dark:bg-zinc-800/50 border-b">
-                            <div className="w-12 border-r p-1 border-l"></div>
-                            <div className="grid grid-cols-7 flex-grow">
-                                {['Ma', 'Ti', 'On', 'To', 'Fr', 'Lø', 'Sø'].map(d => (
-                                    <div key={d} className="text-center py-1.5 text-[10px] font-bold text-gray-500 border-r">{d}</div>
-                                ))}
+
+                            <div className="flex w-full bg-black/5 dark:bg-black/20 border-b border-white/20 dark:border-zinc-800/50">
+                                <div className="w-12 border-r border-white/20 dark:border-zinc-800/50 p-1"></div>
+                                <div className="grid grid-cols-7 flex-grow">
+                                    {['Ma', 'Ti', 'On', 'To', 'Fr', 'Lø', 'Sø'].map(d => (
+                                        <div key={d} className="text-center py-2 text-[10px] font-black text-gray-400 border-r border-white/20 dark:border-zinc-800/50 last:border-0">{d}</div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col bg-white/20 dark:bg-black/10">
+                                {rows}
                             </div>
                         </div>
-                        <div className="flex flex-col">{rows}</div>
-                    </div>
 
-                    <div className="md:hidden bg-blue-50 text-blue-800 text-sm p-3 rounded-lg border border-blue-100 text-center">
-                        Måneds oversigten er kun synlig på større skærme. Se hele året i oversigten nedenfor.
-                    </div>
 
-                    {/* Primary Year/Week Grid View */}
-                    <YearGridView data={calData} year={year} isAdmin={isAdmin} onEditWeek={setEditingWeek} />
-                </div>
-            )}
+                        {/* ==================================
+                            RIGHT SIDE: Primary Year Grid 
+                        =================================== */}
+                        <div className="flex-1 w-full min-w-0">
+                            <YearGridView data={calData} year={year} isAdmin={isAdmin} onEditWeek={setEditingWeek} />
+                        </div>
+                    </div>
+                )}
+            </div>
 
             {editingWeek && (
                 <WeekEditModal
@@ -245,45 +260,45 @@ function ListView({ data, isAdmin, onEditWeek }: { data: any, isAdmin: boolean, 
     if (!data?.weekAssignments) return null;
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border overflow-hidden">
-            <div className="divide-y dark:divide-zinc-800">
+        <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl rounded-3xl shadow-xl border border-white/40 dark:border-zinc-800/60 overflow-hidden">
+            <div className="divide-y divide-gray-100 dark:divide-zinc-800/50">
                 {data.weekAssignments.map((wa: any) => (
-                    <div key={wa.weekNumber} className="flex flex-col sm:flex-row p-4 gap-4 hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors group">
-                        <div className="flex-shrink-0 w-24 flex flex-col justify-center">
-                            <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Uge</span>
-                            <span className="text-3xl font-black text-blue-600 dark:text-blue-500">{wa.weekNumber}</span>
+                    <div key={wa.weekNumber} className="flex flex-col sm:flex-row p-6 gap-6 hover:bg-white/90 dark:hover:bg-zinc-800/80 transition-all group">
+                        <div className="flex-shrink-0 w-24 flex flex-col justify-center items-center bg-gray-50/50 dark:bg-black/20 rounded-2xl p-4 border border-white/50 dark:border-zinc-800/50">
+                            <span className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Uge</span>
+                            <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300">{wa.weekNumber}</span>
                         </div>
                         <div className="flex-grow flex flex-col justify-center">
                             <div className="flex items-center gap-3">
                                 {wa.type === 'SHARE' && wa.share ? (
-                                    <div className="flex items-center gap-2">
-                                        <div className={`w-3 h-3 rounded-full ${wa.share.color || 'bg-gray-400'}`}></div>
-                                        <span className="text-lg font-bold">Andel {wa.share.code || wa.share.name}</span>
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-4 h-4 rounded-full shadow-inner ${wa.share.color || 'bg-gray-400'}`}></div>
+                                        <span className="text-xl font-black tracking-tight drop-shadow-sm">Andel {wa.share.code || wa.share.name}</span>
                                     </div>
                                 ) : wa.type === 'COMMON' ? (
-                                    <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                                    <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/20 px-3 py-1.5 rounded-xl border border-indigo-100/50 dark:border-indigo-800/30">
                                         <UserPlus className="h-5 w-5" />
-                                        <span className="text-lg font-bold tracking-tight">FÆLLES</span>
+                                        <span className="text-lg font-black tracking-tight">FÆLLES</span>
                                     </div>
                                 ) : (
-                                    <span className="text-lg font-bold text-gray-500">{wa.type}</span>
+                                    <span className="text-lg font-bold text-gray-400">{wa.type}</span>
                                 )}
 
                                 {wa.isLocked && (
-                                    <div className="flex items-center gap-1 text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                                    <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50/80 dark:bg-amber-900/20 px-3 py-1 rounded-full border border-amber-200/50 dark:border-amber-700/30 backdrop-blur-sm shadow-sm">
                                         <Lock className="h-3 w-3" /> Kr. Himmelfart Låst
                                     </div>
                                 )}
                                 {wa.source === 'MANUAL' && (
-                                    <span className="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                                    <span className="text-xs font-bold text-purple-600 bg-purple-50/80 dark:bg-purple-900/20 px-3 py-1 rounded-full border border-purple-200/50 dark:border-purple-700/30 backdrop-blur-sm shadow-sm">
                                         Manuelt Overstyret
                                     </span>
                                 )}
                             </div>
 
                             {wa.note && (
-                                <p className="text-sm text-gray-500 mt-1 flex items-start gap-1.5">
-                                    <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                <p className="text-sm text-gray-500 font-medium mt-3 flex items-start gap-2 bg-white/50 dark:bg-black/20 p-3 rounded-xl border border-white/40 dark:border-zinc-800/50">
+                                    <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-blue-500" />
                                     {wa.note}
                                 </p>
                             )}
@@ -293,7 +308,7 @@ function ListView({ data, isAdmin, onEditWeek }: { data: any, isAdmin: boolean, 
                             <div className="flex items-center">
                                 <button
                                     onClick={() => onEditWeek(wa)}
-                                    className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-2 rounded-lg hover:bg-blue-100 transition-colors"
+                                    className="text-sm font-bold text-blue-600 bg-blue-50/80 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 px-4 py-2.5 rounded-xl transition-all shadow-sm border border-blue-100/50 dark:border-blue-800/30"
                                 >
                                     Rediger Uge
                                 </button>
@@ -310,75 +325,46 @@ function YearGridView({ data, year, isAdmin, onEditWeek }: { data: any, year: nu
     const weeks = data?.weekAssignments || []
 
     return (
-        <div className="space-y-8">
-            <div className="bg-white dark:bg-zinc-900 p-4 md:p-6 rounded-2xl shadow-sm border">
-                <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-10 xl:grid-cols-13 gap-2">
-                    {weeks.map((wa: any) => (
-                        <div
-                            key={wa.weekNumber}
-                            onClick={() => isAdmin ? onEditWeek(wa) : null}
-                            className={`relative p-2 rounded-xl border flex flex-col justify-between aspect-square transition-all ${isAdmin ? 'cursor-pointer hover:shadow-md hover:ring-2 hover:ring-blue-500' : ''}
-                                ${wa.type === 'COMMON' ? 'bg-indigo-50/50 border-indigo-100 dark:bg-indigo-900/10 dark:border-indigo-900/30' :
-                                    wa.type === 'SHARE' ? 'bg-white border-gray-100 dark:bg-zinc-800/50 dark:border-zinc-700/50' :
-                                        'bg-gray-50 border-dashed dark:bg-zinc-900'}
-                            `}
-                        >
-                            <div className="flex justify-between items-start">
-                                <span className="text-xl font-black text-gray-300 dark:text-gray-600 leading-none">
-                                    {wa.weekNumber}
-                                </span>
-                                {wa.isLocked && <Lock className="h-2.5 w-2.5 text-amber-500" />}
-                            </div>
+        <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl p-6 md:p-8 rounded-3xl shadow-2xl border border-white/40 dark:border-zinc-800/60">
+            {/* Narrower grid config for side-by-side mode */}
+            <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-3">
+                {weeks.map((wa: any) => (
+                    <div
+                        key={wa.weekNumber}
+                        onClick={() => isAdmin ? onEditWeek(wa) : null}
+                        className={`relative p-3 rounded-2xl border shadow-sm flex flex-col justify-between aspect-square transition-all ${isAdmin ? 'cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:ring-2 hover:ring-blue-500/50' : ''}
+                            ${wa.type === 'COMMON' ? 'bg-gradient-to-br from-indigo-50/80 to-purple-50/80 border-indigo-100/50 dark:from-indigo-900/30 dark:to-purple-900/20 dark:border-indigo-800/30' :
+                                wa.type === 'SHARE' ? 'bg-white/90 border-gray-100/80 dark:bg-zinc-800/90 dark:border-zinc-700/50' :
+                                    'bg-gray-50/50 border-dashed dark:bg-zinc-900/50'}
+                        `}
+                    >
+                        <div className="flex justify-between items-start">
+                            <span className="text-2xl font-black text-gray-300 dark:text-gray-600 leading-none drop-shadow-sm">
+                                {wa.weekNumber}
+                            </span>
+                            {wa.isLocked && <Lock className="h-3.5 w-3.5 text-amber-500 drop-shadow-sm" />}
+                        </div>
 
-                            <div className="mt-auto">
-                                {wa.type === 'SHARE' && wa.share ? (
-                                    <div className="flex flex-col">
-                                        <div className={`w-full h-1.5 rounded-full mb-1 ${wa.share.color || 'bg-blue-500'}`}></div>
-                                        <span className="text-xs font-bold tracking-tight">{wa.share.code || wa.share.name}</span>
-                                    </div>
-                                ) : wa.type === 'COMMON' ? (
-                                    <div className="flex flex-col text-indigo-600 dark:text-indigo-400">
-                                        <span className="text-[10px] font-black tracking-tighter leading-tight bg-indigo-100 dark:bg-indigo-900/50 px-1 py-0.5 rounded text-center">FÆLLES</span>
-                                    </div>
-                                ) : (
-                                    <span className="text-[10px] font-semibold text-gray-400">{wa.type}</span>
-                                )}
-                            </div>
-
-                            {wa.source === 'MANUAL' && (
-                                <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-purple-500 ring-2 ring-white dark:ring-zinc-900"></div>
+                        <div className="mt-auto">
+                            {wa.type === 'SHARE' && wa.share ? (
+                                <div className="flex flex-col">
+                                    <div className={`w-full h-2 rounded-full mb-1.5 shadow-inner ${wa.share.color || 'bg-blue-500'}`}></div>
+                                    <span className="text-xs font-black tracking-tight">{wa.share.code || wa.share.name}</span>
+                                </div>
+                            ) : wa.type === 'COMMON' ? (
+                                <div className="flex flex-col text-indigo-700 dark:text-indigo-300">
+                                    <span className="text-[10px] font-black tracking-widest bg-indigo-100/80 dark:bg-indigo-900/50 px-1 py-1 rounded-md text-center shadow-sm">FÆLLES</span>
+                                </div>
+                            ) : (
+                                <span className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">{wa.type}</span>
                             )}
                         </div>
-                    ))}
-                </div>
-            </div>
 
-            <div className="bg-blue-50/50 border border-blue-100 dark:bg-blue-900/10 dark:border-blue-900/30 p-6 rounded-2xl flex flex-col md:flex-row gap-8">
-                <div className="flex-1">
-                    <h4 className="font-bold mb-3 flex items-center gap-2">
-                        <Clock className="h-4 w-4" /> Vigtige Datoer & Helligdage
-                    </h4>
-                    <div className="text-sm space-y-2">
-                        {data?.holidays && data.holidays.slice(0, 5).map((h: any) => (
-                            <div key={h.date} className="flex justify-between border-b border-blue-100 dark:border-blue-900/50 pb-1">
-                                <span className="text-gray-600 dark:text-gray-400">{new Date(h.date).toLocaleDateString('da-DK', { day: 'numeric', month: 'short' })}</span>
-                                <span className="font-medium text-blue-900 dark:text-blue-100">{h.name}</span>
-                            </div>
-                        ))}
+                        {wa.source === 'MANUAL' && (
+                            <div className="absolute -top-1.5 -right-1.5 w-3 h-3 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 shadow-md ring-2 ring-white dark:ring-zinc-900"></div>
+                        )}
                     </div>
-                </div>
-
-                <div className="flex-1">
-                    <h4 className="font-bold mb-3">Farvekoder (Andele)</h4>
-                    <div className="flex flex-wrap gap-2">
-                        {data?.weekAssignments && Array.from(new Map(data.weekAssignments.filter((wa: any) => wa.type === 'SHARE' && wa.share).map((wa: any) => [wa.share.id, wa.share])).values()).map((share: any) => (
-                            <div key={share.id} className="flex items-center gap-1.5 bg-white dark:bg-zinc-800 px-2 py-1 rounded-md border text-xs font-bold">
-                                <div className={`w-2 h-2 rounded-full ${share.color}`}></div>
-                                {share.code || share.name}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                ))}
             </div>
         </div>
     )
