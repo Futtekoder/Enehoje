@@ -25,9 +25,9 @@ export default async function SwapPage() {
     return (
         <div className="container mx-auto p-4 md:p-8 max-w-3xl min-h-[80vh] flex flex-col justify-center">
 
-            <Link href="/ugeplan" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white transition group mb-8 w-fit">
+            <Link href="/calendar" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white transition group mb-8 w-fit">
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                Tilbage til Ugeplan
+                Tilbage til Kalender
             </Link>
 
             <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-white/20 dark:border-zinc-800 p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden">
