@@ -19,10 +19,10 @@ export function NavBar() {
         { name: "Planlægning", href: "/planning", icon: <Plane size={18} /> },
         { name: "Drift & Sikkerhed", href: "/operations", icon: <Wrench size={18} /> },
         { name: "Forum", href: "/forum", icon: <MessageSquare size={18} /> },
-        { name: "Dokumenter", href: "/documents", icon: <FileText size={18} /> },
     ]
 
     const moreLinks = [
+        { name: "Dokumenter", href: "/documents", icon: <FileText size={16} /> },
         { name: "Afstemninger", href: "/polls", icon: <Vote size={16} /> },
         { name: "Galleri", href: "/gallery", icon: <ImageIcon size={16} /> },
     ]
