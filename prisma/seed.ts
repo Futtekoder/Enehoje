@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
@@ -22,12 +23,14 @@ async function main() {
         // Create a default user for each share
         // Email: andel1@enehoje.dk, Password: password123 (Change immediately!)
         const email = `andel${i + 1}@enehoje.dk`
+        const hashedPassword = await bcrypt.hash("password123", 10)
         await prisma.user.create({
             data: {
                 email: email,
                 name: `Ejer ${shareData.name}`,
-                password: "password123", // In a real app, hash this! (But NextAuth Credentials simple logic we wrote compares strings)
-                role: "MEMBER",
+                password: hashedPassword,
+                role: i === 0 ? "SYSTEM_ADMIN" : "MEMBER", // Make the first one an Admin
+                status: "APPROVED", // Bypass the waiting room for seeded users
                 shareId: share.id
             }
         })

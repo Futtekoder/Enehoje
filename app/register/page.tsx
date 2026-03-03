@@ -3,7 +3,10 @@ import { registerUser } from "./actions"
 import Link from "next/link"
 import { UserPlus, Mail, Lock, User, ArrowRight, Home } from "lucide-react"
 
-export default async function RegisterPage() {
+export default async function RegisterPage(props: {
+    searchParams: Promise<{ error?: string }>
+}) {
+    const searchParams = await props.searchParams;
     const shares = await prisma.share.findMany({
         orderBy: { name: 'asc' }
     })
@@ -26,6 +29,14 @@ export default async function RegisterPage() {
 
                     <h1 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white mb-2">Opret Profil</h1>
                     <p className="text-gray-500 dark:text-gray-400 mb-8 text-center">Bliv en del af det digitale fællesskab på Enehøje</p>
+
+                    {/* Error State */}
+                    {searchParams?.error === "EmailExists" && (
+                        <div className="w-full mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded-xl text-sm border border-red-200 dark:border-red-800/50">
+                            <p className="font-bold">E-mailen er allerede i brug.</p>
+                            <p>Gå til login eller prøv en anden e-mailadresse.</p>
+                        </div>
+                    )}
 
                     <form action={registerUser} className="w-full space-y-5">
 

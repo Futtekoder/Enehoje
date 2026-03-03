@@ -3,11 +3,10 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { LogIn, Mail, Lock, AlertCircle } from "lucide-react"
 
-export default async function LoginPage({
-    searchParams,
-}: {
-    searchParams: { error?: string }
+export default async function LoginPage(props: {
+    searchParams: Promise<{ error?: string }>
 }) {
+    const searchParams = await props.searchParams
     const session = await auth()
     if (session?.user) {
         redirect("/dashboard")
