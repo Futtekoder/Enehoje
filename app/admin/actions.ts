@@ -24,6 +24,16 @@ export async function toggleAdminRole(userId: string, currentRole: string) {
 
     const newRole = currentRole === 'SYSTEM_ADMIN' ? 'MEMBER' : 'SYSTEM_ADMIN'
 
+    // Last admin guard
+    if (newRole === 'MEMBER') {
+        const adminCount = await prisma.user.count({
+            where: { role: 'SYSTEM_ADMIN' }
+        })
+        if (adminCount <= 1) {
+            throw new Error("Der skal mindst være én administrator tilbage.")
+        }
+    }
+
     await prisma.user.update({
         where: { id: userId },
         data: { role: newRole }
@@ -37,17 +47,6 @@ export async function deleteUser(userId: string) {
 
     await prisma.user.delete({
         where: { id: userId }
-    })
-
-    revalidatePath("/admin")
-}
-
-export async function updateUserShare(userId: string, shareId: string) {
-    await checkAdmin()
-
-    await prisma.user.update({
-        where: { id: userId },
-        data: { shareId: shareId || null }
     })
 
     revalidatePath("/admin")

@@ -2,7 +2,7 @@
 "use client"
 
 import { useState } from "react"
-import { toggleAdminRole, deleteUser, updateUserShare, updateUserStatus } from "./actions"
+import { toggleAdminRole, deleteUser, updateUserStatus } from "./actions"
 import { Shield, Trash2, Edit2, Check, X, Clock } from "lucide-react"
 
 type User = {
@@ -11,9 +11,14 @@ type User = {
     email: string
     role: string
     status: string
-    shareId: string | null
     createdAt: Date
-    share: { name: string } | null
+    memberships: {
+        isChair: boolean
+        share: {
+            id: string
+            name: string
+        }
+    }[]
 }
 
 type Share = {
@@ -22,13 +27,6 @@ type Share = {
 }
 
 export function AdminUserTable({ users, shares }: { users: User[], shares: Share[] }) {
-    const [editingUser, setEditingUser] = useState<string | null>(null)
-
-    const handleShareChange = async (userId: string, shareId: string) => {
-        await updateUserShare(userId, shareId)
-        setEditingUser(null)
-    }
-
     return (
         <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-800 overflow-hidden">
             <div className="overflow-x-auto">
@@ -36,7 +34,7 @@ export function AdminUserTable({ users, shares }: { users: User[], shares: Share
                     <thead className="bg-gray-50 dark:bg-zinc-800/50 border-b border-gray-100 dark:border-zinc-800">
                         <tr>
                             <th className="px-6 py-4 font-semibold text-gray-900 dark:text-white">Navn / Email</th>
-                            <th className="px-6 py-4 font-semibold text-gray-900 dark:text-white">Andel</th>
+                            <th className="px-6 py-4 font-semibold text-gray-900 dark:text-white">Andele</th>
                             <th className="px-6 py-4 font-semibold text-gray-900 dark:text-white">Rolle</th>
                             <th className="px-6 py-4 font-semibold text-gray-900 dark:text-white">Status</th>
                             <th className="px-6 py-4 font-semibold text-gray-900 dark:text-white">Oprettet</th>
@@ -51,25 +49,24 @@ export function AdminUserTable({ users, shares }: { users: User[], shares: Share
                                     <div className="text-gray-500 dark:text-gray-400 text-xs">{user.email}</div>
                                 </td>
                                 <td className="px-6 py-4">
-                                    {editingUser === user.id ? (
-                                        <select
-                                            defaultValue={user.shareId || ""}
-                                            onChange={(e) => handleShareChange(user.id, e.target.value)}
-                                            onBlur={() => setEditingUser(null)}
-                                            autoFocus
-                                            className="p-1 border rounded text-sm bg-white dark:bg-zinc-800"
-                                        >
-                                            <option value="">Ingen</option>
-                                            {shares.map(s => (
-                                                <option key={s.id} value={s.id}>{s.name}</option>
-                                            ))}
-                                        </select>
-                                    ) : (
-                                        <div onClick={() => setEditingUser(user.id)} className="cursor-pointer hover:underline decoration-dashed underline-offset-4 flex items-center gap-1">
-                                            {user.share?.name || <span className="text-gray-400 italic">Ingen</span>}
-                                            <Edit2 className="w-3 h-3 text-gray-300 ml-1" />
-                                        </div>
-                                    )}
+                                    <div className="flex flex-wrap gap-2">
+                                        {user.memberships.length > 0 ? (
+                                            user.memberships.map(m => (
+                                                <span
+                                                    key={m.share.id}
+                                                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold ${m.isChair
+                                                        ? 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/50 border'
+                                                        : 'bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-gray-300'
+                                                        }`}
+                                                >
+                                                    {m.isChair && <span className="text-[10px]">👑</span>}
+                                                    {m.share.name}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <span className="text-gray-400 italic text-xs">Ingen andele</span>
+                                        )}
+                                    </div>
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${user.role === 'SYSTEM_ADMIN'

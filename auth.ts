@@ -40,9 +40,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 const isValid = await bcrypt.compare(credentials.password as string, user.password)
 
                 if (isValid) {
-                    if (user.status === "PENDING") {
-                        throw new PendingApprovalError()
-                    }
+                    // Temporarily disable waiting room for testing
+                    // if (user.status === "PENDING") {
+                    //     throw new PendingApprovalError()
+                    // }
                     if (user.status === "REJECTED") {
                         throw new AccountRejectedError()
                     }

@@ -6,10 +6,11 @@ export default async function AdminPage() {
     const users = await prisma.user.findMany({
         orderBy: { createdAt: 'desc' },
         include: {
-            share: {
-                select: {
-                    id: true,
-                    name: true
+            memberships: {
+                include: {
+                    share: {
+                        select: { id: true, name: true }
+                    }
                 }
             }
         }
@@ -32,11 +33,11 @@ export default async function AdminPage() {
                 </div>
                 <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-gray-100 dark:border-zinc-800 shadow-sm">
                     <div className="text-gray-500 text-sm font-medium mb-1">Administratorer</div>
-                    <div className="text-3xl font-bold text-purple-600">{users.filter(u => u.role === 'SYSTEM_ADMIN').length}</div>
+                    <div className="text-3xl font-bold text-purple-600">{users.filter((u: any) => u.role === 'SYSTEM_ADMIN').length}</div>
                 </div>
                 <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-gray-100 dark:border-zinc-800 shadow-sm">
                     <div className="text-gray-500 text-sm font-medium mb-1">Ufordelte Brugere</div>
-                    <div className="text-3xl font-bold text-orange-500">{users.filter(u => !u.shareId).length}</div>
+                    <div className="text-3xl font-bold text-orange-500">{users.filter((u: any) => u.memberships.length === 0).length}</div>
                 </div>
             </div>
 

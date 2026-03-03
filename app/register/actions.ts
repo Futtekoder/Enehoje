@@ -29,7 +29,7 @@ export async function registerUser(formData: FormData) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Create user
+    // Create user with explicit membership
     const newUser = await prisma.user.create({
         data: {
             name,
@@ -38,6 +38,12 @@ export async function registerUser(formData: FormData) {
             shareId,
             role: "MEMBER", // Default role
             status: "PENDING", // Stays pending until admin approves
+            memberships: {
+                create: {
+                    shareId,
+                    isChair: false
+                }
+            }
         },
     })
 

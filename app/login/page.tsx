@@ -89,6 +89,7 @@ export default async function LoginPage(props: {
                                     type="email"
                                     name="email"
                                     required
+                                    defaultValue=""
                                     className="w-full p-4 pl-12 bg-white dark:bg-zinc-900 border-2 border-transparent focus:border-blue-500 rounded-xl transition-all shadow-sm text-base font-medium placeholder:text-gray-300 dark:placeholder:text-gray-600"
                                     placeholder="din@email.dk"
                                 />
@@ -109,6 +110,7 @@ export default async function LoginPage(props: {
                                     type="password"
                                     name="password"
                                     required
+                                    defaultValue=""
                                     className="w-full p-4 pl-12 bg-white dark:bg-zinc-900 border-2 border-transparent focus:border-blue-500 rounded-xl transition-all shadow-sm text-base font-medium placeholder:text-gray-300 dark:placeholder:text-gray-600"
                                     placeholder="******"
                                 />
