@@ -98,17 +98,6 @@ export default async function LandingPage() {
                     Andel: <span className="px-2 py-0.5 rounded bg-gray-200 dark:bg-zinc-800 font-bold">{user.share?.name || "Gæst"}</span>
                   </p>
                 </div>
-
-                {user.role === 'SYSTEM_ADMIN' && (
-                  <div className="flex justify-center md:justify-end">
-                    <Link
-                      href="/admin"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 dark:bg-zinc-800/40 backdrop-blur-sm border border-black/5 dark:border-white/5 hover:bg-white/80 dark:hover:bg-zinc-700 transition-all text-xs font-bold text-gray-600 dark:text-gray-400"
-                    >
-                      <span className="opacity-70">🔐</span> Admin Panel
-                    </Link>
-                  </div>
-                )}
               </div>
 
               <div className="flex flex-col lg:flex-row gap-8">
