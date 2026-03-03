@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Calendar, MessageSquare, Wrench, Plane } from "lucide-react";
+import { ArrowRight, Calendar, MessageSquare, Wrench, Ship } from "lucide-react";
 import { MarineWidget } from "@/components/marine-widget"
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
@@ -32,7 +32,7 @@ export default async function LandingPage() {
     {
       title: "Planlægning",
       description: "Fælles arbejdsweekender, madplaner og opgaver",
-      icon: <Plane className="w-8 h-8 md:w-10 md:h-10 text-emerald-100" />,
+      icon: <Ship className="w-8 h-8 md:w-10 md:h-10 text-emerald-100" />,
       href: "/planning",
       color: "bg-emerald-600/50 border-emerald-400/30",
       hoverColor: "hover:bg-emerald-600/80 hover:border-emerald-400/60 hover:-translate-y-1 hover:shadow-2xl shadow-emerald-900/50"
@@ -105,7 +105,7 @@ export default async function LandingPage() {
                       href="/admin"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 dark:bg-zinc-800/40 backdrop-blur-sm border border-black/5 dark:border-white/5 hover:bg-white/80 dark:hover:bg-zinc-700 transition-all text-xs font-bold text-gray-600 dark:text-gray-400"
                     >
-                      <span className="opacity-70">🔐</span> Administration
+                      <span className="opacity-70">🔐</span> Admin Panel
                     </Link>
                   </div>
                 )}
