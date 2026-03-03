@@ -12,16 +12,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const startObj = new Date(startDate);
-    const endObj = new Date(endDate);
+    // Update the API validation logic to expect CalendarEventType
+    if (!type || !["GENERAL_ASSEMBLY", "WORK_WEEKEND", "MEETING", "MAINTENANCE", "OTHER"].includes(type)) {
+      return new NextResponse("Invalid event type", { status: 400 });
+    }
 
-    const event = await prisma.event.create({
+    const event = await prisma.calendarEvent.create({
       data: {
         title,
         type,
         description,
-        startDate: startObj,
-        endDate: endObj,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
         allDay: allDay ?? true
       }
     });
@@ -35,15 +37,15 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
 
-    if (!id) return NextResponse.json({ error: "Event ID required" }, { status: 400 });
+  if (!id) return NextResponse.json({ error: "Event ID required" }, { status: 400 });
 
-    try {
-        await prisma.event.delete({ where: { id } });
-        return NextResponse.json({ success: true });
-    } catch (error) {
-        return NextResponse.json({ error: "Failed to delete event" }, { status: 500 });
-    }
+  try {
+    await prisma.calendarEvent.delete({ where: { id } });
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to delete event" }, { status: 500 });
+  }
 }

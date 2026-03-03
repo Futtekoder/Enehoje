@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const yearParam = searchParams.get("year");
-  
+
   if (!yearParam || isNaN(parseInt(yearParam))) {
     return NextResponse.json({ error: "Valid year parameter is required" }, { status: 400 });
   }
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   try {
     const weeksInYear = getWeeksInIsoYear(year);
     const ascensionWeek = getAscensionIsoWeek(year);
-    
+
     // Fetch generated/manual assignments
     const weekAssignmentsData = await prisma.weekAssignment.findMany({
       where: { year },
@@ -41,8 +41,8 @@ export async function GET(request: Request) {
     // We do a simple bound based on ISO year limits
     const startObj = new Date(Date.UTC(year - 1, 11, 20)); // Buffer
     const endObj = new Date(Date.UTC(year + 1, 0, 10)); // Buffer
-    
-    const eventsData = await prisma.event.findMany({
+
+    const eventsData = await prisma.calendarEvent.findMany({
       where: {
         startDate: { gte: startObj },
         endDate: { lte: endObj }

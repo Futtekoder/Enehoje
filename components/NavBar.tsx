@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useSession } from "next-auth/react"
-import { Calendar as CalendarIcon, MessageSquare, FileText, Vote, LogOut, Menu, X, Plane, Anchor, Wrench, ChevronDown, Settings, Image as ImageIcon } from "lucide-react"
+import { Calendar as CalendarIcon, MessageSquare, FileText, Vote, LogOut, Menu, X, Ship as ShipIcon, Anchor, Wrench, ChevronDown, Settings, Image as ImageIcon } from "lucide-react"
 import { useState } from "react"
 import { usePathname } from "next/navigation"
 
@@ -16,7 +16,7 @@ export function NavBar() {
 
     const navLinks = [
         { name: "Kalender", href: "/calendar", icon: <CalendarIcon size={18} /> },
-        { name: "Planlægning", href: "/planning", icon: <Plane size={18} /> },
+        { name: "Planlægning", href: "/planning", icon: <ShipIcon size={18} /> },
         { name: "Drift & Sikkerhed", href: "/operations", icon: <Wrench size={18} /> },
         { name: "Forum", href: "/forum", icon: <MessageSquare size={18} /> },
     ]

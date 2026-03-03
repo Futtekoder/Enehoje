@@ -73,7 +73,7 @@ export async function GET(request: Request) {
         const yearStartObj = new Date(Date.UTC(year, 0, 1));
         const yearEndObj = new Date(Date.UTC(year, 11, 31, 23, 59, 59));
 
-        const events = await prisma.event.findMany({
+        const events = await prisma.calendarEvent.findMany({
             where: {
                 startDate: { gte: yearStartObj },
                 endDate: { lte: yearEndObj }
