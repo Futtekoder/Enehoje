@@ -206,7 +206,7 @@ export default function UnifiedCalendarPage() {
                         {/* ==================================
                             LEFT SIDE: Compact Monthly View (Top on mobile, left on desktop)
                         =================================== */}
-                        <div className="w-full lg:w-[280px] xl:w-[320px] shrink-0 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl rounded-3xl shadow-xl border border-white/40 dark:border-zinc-800/60 overflow-hidden lg:sticky lg:top-8">
+                        <div className="w-full lg:w-[260px] xl:w-[300px] shrink-0 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl rounded-3xl shadow-xl border border-white/40 dark:border-zinc-800/60 overflow-hidden lg:sticky lg:top-8">
 
                             <div className="p-4 border-b border-white/20 dark:border-zinc-800/50 bg-white/40 dark:bg-black/10 flex justify-between items-center backdrop-blur-sm">
                                 <button onClick={handleToday} className="text-xs font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white bg-white/50 dark:bg-zinc-800/50 hover:bg-white dark:hover:bg-zinc-700 px-3 py-1.5 rounded-lg transition-colors shadow-sm">
@@ -327,22 +327,22 @@ function YearGridView({ data, year, isAdmin, onEditWeek }: { data: any, year: nu
     return (
         <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl p-4 md:p-6 rounded-3xl shadow-2xl border border-white/40 dark:border-zinc-800/60">
             {/* Narrower grid config for side-by-side mode */}
-            <div className="grid grid-cols-5 sm:grid-cols-7 lg:grid-cols-8 xl:grid-cols-10 gap-2.5">
+            <div className="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-9 xl:grid-cols-11 gap-2">
                 {weeks.map((wa: any) => (
                     <div
                         key={wa.weekNumber}
                         onClick={() => isAdmin ? onEditWeek(wa) : null}
-                        className={`relative p-2.5 rounded-2xl border shadow-sm flex flex-col justify-between aspect-square transition-all ${isAdmin ? 'cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:ring-2 hover:ring-blue-500/50' : ''}
+                        className={`relative p-2 rounded-2xl border shadow-sm flex flex-col justify-between aspect-square transition-all ${isAdmin ? 'cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:ring-2 hover:ring-blue-500/50' : ''}
                             ${wa.type === 'COMMON' ? 'bg-gradient-to-br from-indigo-50/80 to-purple-50/80 border-indigo-100/50 dark:from-indigo-900/30 dark:to-purple-900/20 dark:border-indigo-800/30' :
                                 wa.type === 'SHARE' ? 'bg-white/90 border-gray-100/80 dark:bg-zinc-800/90 dark:border-zinc-700/50' :
                                     'bg-gray-50/50 border-dashed dark:bg-zinc-900/50'}
                         `}
                     >
                         <div className="flex justify-between items-start">
-                            <span className="text-xl font-black text-gray-400 dark:text-gray-500 leading-none">
+                            <span className="text-lg font-black text-gray-400 dark:text-gray-500 leading-none">
                                 {wa.weekNumber}
                             </span>
-                            {wa.isLocked && <Lock className="h-3 w-3 text-amber-500" />}
+                            {wa.isLocked && <Lock className="h-2.5 w-2.5 text-amber-500" />}
                         </div>
 
                         <div className="mt-auto">
