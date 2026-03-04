@@ -1,14 +1,44 @@
 import { format } from "date-fns"
 import { da } from "date-fns/locale"
-import { Clock, Info, Shield, User as UserIcon } from "lucide-react"
+import { Clock, Info, Shield, User as UserIcon, Trash2 } from "lucide-react"
 
 export function OverviewTab({ event, currentUser, setEvent }: { event: any, currentUser: any, setEvent: any }) {
+    const canDelete = currentUser.id === event.createdByUserId || currentUser.role === "SYSTEM_ADMIN"
+
+    const handleDeleteEvent = async () => {
+        if (!confirm("Er du sikker på at du vil slette dette arrangement? Dette kan ikke fortrydes, og alle tilmeldinger og opgaver vil gå tabt.")) return
+
+        try {
+            const res = await fetch(`/api/events/${event.id}`, { method: "DELETE" })
+            if (res.ok) {
+                window.location.href = "/planning"
+            } else {
+                alert("Der skete en fejl ved sletning af arrangementet.")
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     return (
         <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center mb-4">
-                    <Info className="w-5 h-5 mr-2 text-blue-500" /> Detaljer
-                </h3>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 relative">
+                <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
+                        <Info className="w-5 h-5 mr-2 text-blue-500" /> Detaljer
+                    </h3>
+
+                    {canDelete && (
+                        <button
+                            onClick={handleDeleteEvent}
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors flex items-center gap-2 text-sm font-medium"
+                            title="Slet arrangement"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                            <span className="hidden sm:inline">Slet</span>
+                        </button>
+                    )}
+                </div>
 
                 <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 mb-6">
                     {event.description ? (

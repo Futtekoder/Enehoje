@@ -54,3 +54,39 @@ export async function GET(
         return new NextResponse("Internal Error", { status: 500 })
     }
 }
+
+export async function DELETE(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const session = await auth()
+        if (!session?.user?.id) return new NextResponse("Unauthorized", { status: 401 })
+
+        const resolvedParams = await params
+        const eventId = resolvedParams.id
+
+        // Fetch event to check ownership
+        const event = await prisma.event.findUnique({
+            where: { id: eventId },
+            select: { createdByUserId: true }
+        })
+
+        if (!event) return new NextResponse("Not Found", { status: 404 })
+
+        // Only creator (or SYSTEM_ADMIN) can delete
+        if (event.createdByUserId !== session.user.id && session.user.role !== "SYSTEM_ADMIN") {
+            return new NextResponse("Forbidden", { status: 403 })
+        }
+
+        // Delete event
+        await prisma.event.delete({
+            where: { id: eventId }
+        })
+
+        return new NextResponse(null, { status: 204 })
+    } catch (error) {
+        console.error("Error deleting event:", error)
+        return new NextResponse("Internal Error", { status: 500 })
+    }
+}
