@@ -1,5 +1,6 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
+import { prisma } from "@/lib/db"
 import { EventListClient } from "./event-list-client"
 
 export default async function PlanningHubPage() {
@@ -14,6 +15,15 @@ export default async function PlanningHubPage() {
         redirect("/pending")
     }
 
+    const userWithShares = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        include: { memberships: { include: { share: true } } }
+    })
+
+    // Pass user role and shares to the client
+    const userRole = session.user.role
+    const userShares = userWithShares?.memberships.map(m => m.share) || []
+
     return (
         <div className="container mx-auto max-w-7xl px-4 py-8 relative z-10">
             <div className="mb-8">
@@ -25,7 +35,7 @@ export default async function PlanningHubPage() {
                 </p>
             </div>
 
-            <EventListClient />
+            <EventListClient userRole={userRole} userShares={userShares} />
         </div>
     )
 }

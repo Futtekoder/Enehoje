@@ -4,12 +4,14 @@ import { useState, useEffect } from "react"
 import { format } from "date-fns"
 import { da } from "date-fns/locale"
 import Link from "next/link"
-import { CalendarDays, Users, CheckSquare, Ship, MapPin } from "lucide-react"
+import { CalendarDays, Users, CheckSquare, Ship, MapPin, Plus } from "lucide-react"
+import { CreateEventModal } from "./create-event-modal"
 
-export function EventListClient() {
+export function EventListClient({ userRole, userShares }: { userRole: string, userShares: any[] }) {
     const [events, setEvents] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState("UPCOMING") // UPCOMING, MINE, WORK, SHARE
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
     useEffect(() => {
         fetchEvents()
@@ -61,33 +63,53 @@ export function EventListClient() {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
-            {/* Filter Tabs */}
-            <div className="flex overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 gap-2 scrollbar-none">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                {/* Filter Tabs */}
+                <div className="flex overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 gap-2 scrollbar-none w-full sm:w-auto">
+                    <button
+                        onClick={() => setFilter("UPCOMING")}
+                        className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${filter === "UPCOMING" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm border border-gray-200 dark:border-gray-700"}`}
+                    >
+                        Alle Kommende
+                    </button>
+                    <button
+                        onClick={() => setFilter("MINE")}
+                        className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${filter === "MINE" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm border border-gray-200 dark:border-gray-700"}`}
+                    >
+                        Mine Tilmeldinger
+                    </button>
+                    <button
+                        onClick={() => setFilter("WORK")}
+                        className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${filter === "WORK" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm border border-gray-200 dark:border-gray-700"}`}
+                    >
+                        Arbejdsweekender
+                    </button>
+                    <button
+                        onClick={() => setFilter("SHARE")}
+                        className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${filter === "SHARE" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm border border-gray-200 dark:border-gray-700"}`}
+                    >
+                        Mine Andele
+                    </button>
+                </div>
+
                 <button
-                    onClick={() => setFilter("UPCOMING")}
-                    className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${filter === "UPCOMING" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm border border-gray-200 dark:border-gray-700"}`}
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-md transition-all sm:ml-auto w-full sm:w-auto justify-center"
                 >
-                    Alle Kommende
-                </button>
-                <button
-                    onClick={() => setFilter("MINE")}
-                    className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${filter === "MINE" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm border border-gray-200 dark:border-gray-700"}`}
-                >
-                    Mine Tilmeldinger
-                </button>
-                <button
-                    onClick={() => setFilter("WORK")}
-                    className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${filter === "WORK" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm border border-gray-200 dark:border-gray-700"}`}
-                >
-                    Arbejdsweekender
-                </button>
-                <button
-                    onClick={() => setFilter("SHARE")}
-                    className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${filter === "SHARE" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-sm border border-gray-200 dark:border-gray-700"}`}
-                >
-                    Mine Andele
+                    <Plus className="w-4 h-4" />
+                    Opret Arrangement
                 </button>
             </div>
+
+            <CreateEventModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                userRole={userRole}
+                userShares={userShares}
+                onEventCreated={(newEvent) => {
+                    setEvents(prev => [...prev, newEvent].sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime()))
+                }}
+            />
 
             {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
