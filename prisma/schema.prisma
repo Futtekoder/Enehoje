@@ -566,3 +566,47 @@ model TaskVote {
 
   @@unique([taskId, userId])
 }
+
+// -----------------------------------------
+// DRIFT & CHECKLISTER (OPERATIONS HUB)
+// -----------------------------------------
+
+model OperationUnit {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  icon        String?
+  order       Int      @default(0)
+
+  sections    OperationSection[]
+}
+
+model OperationSection {
+  id            String   @id @default(cuid())
+  unitId        String
+  title         String
+  slug          String
+  description   String?
+
+  videoKey      String?
+  videoSize     Int?
+
+  order         Int      @default(0)
+  isQuickAction Boolean  @default(false)
+
+  unit          OperationUnit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  checklist     OperationChecklistItem[]
+
+  @@unique([unitId, slug])
+}
+
+model OperationChecklistItem {
+  id        String @id @default(cuid())
+  sectionId String
+  text      String
+  order     Int    @default(0)
+
+  section   OperationSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+}

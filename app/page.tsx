@@ -38,10 +38,10 @@ export default async function LandingPage() {
       hoverColor: "hover:bg-emerald-600/80 hover:border-emerald-400/60 hover:-translate-y-1 hover:shadow-2xl shadow-emerald-900/50"
     },
     {
-      title: "Drift & Sikkerhed",
-      description: "Ankomstguides, manualer og tjeklister til enhederne",
+      title: "Drift & Vejledninger",
+      description: "Guide til lukning, fyret, båden, og sikkerhed mod tyveri.",
       icon: <Wrench className="w-8 h-8 md:w-10 md:h-10 text-orange-100" />,
-      href: "/operations",
+      href: "/drift",
       color: "bg-orange-600/50 border-orange-400/30",
       hoverColor: "hover:bg-orange-600/80 hover:border-orange-400/60 hover:-translate-y-1 hover:shadow-2xl shadow-orange-900/50"
     },

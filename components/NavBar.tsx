@@ -17,7 +17,7 @@ export function NavBar() {
     const navLinks = [
         { name: "Kalender", href: "/calendar", icon: <CalendarIcon size={18} /> },
         { name: "Planlægning", href: "/planning", icon: <ShipIcon size={18} /> },
-        { name: "Drift & Sikkerhed", href: "/operations", icon: <Wrench size={18} /> },
+        { name: "Drift & Vejledninger", href: "/drift", icon: <Wrench size={18} /> },
         { name: "Forum", href: "/forum", icon: <MessageSquare size={18} /> },
     ]
 

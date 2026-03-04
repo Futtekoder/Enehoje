@@ -33,10 +33,11 @@ export default async function AdminLayout({
                 <p className="text-gray-500 dark:text-gray-400 text-sm">
                     Administrer brugere, rettigheder og andele.
                 </p>
-                <div className="flex gap-4 mt-6">
+                <div className="flex gap-4 mt-6 flex-wrap">
                     <a href="/admin" className="text-sm font-semibold text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400">Brugere</a>
                     <a href="/admin/calendar" className="text-sm font-semibold text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 border-l border-gray-300 dark:border-zinc-700 pl-4">Kalender Opsætning</a>
                     <a href="/admin/shares" className="text-sm font-semibold text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 border-l border-gray-300 dark:border-zinc-700 pl-4">Andele & Formænd</a>
+                    <a href="/admin/drift" className="text-sm font-semibold text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 border-l border-gray-300 dark:border-zinc-700 pl-4">Drift & Guides</a>
                 </div>
             </div>
             {children}
