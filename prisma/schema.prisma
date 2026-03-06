@@ -103,6 +103,8 @@ model User {
   approvedTasks     EventTask[]          @relation("TaskApprover")
   taskSignups       TaskSignup[]
   taskVotes         TaskVote[]
+
+  attachments       Attachment[]         @relation("UserAttachments")
 }
 
 model Week {
@@ -194,14 +196,30 @@ model Comment {
 }
 
 model Attachment {
-  id        String   @id @default(uuid())
-  url       String
-  filename  String
-  mimeType  String
-  size      Int
-  postId    String?
-  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  id               String   @id @default(uuid())
+  url              String   // S3 Public URL
+  fileKey          String?  // S3 Object Key (optional for legacy)
+  filename         String
+  mimeType         String
+  size             Int
+
+  uploadedByUserId String?  // Made optional temporarily in case old records exist
+  uploadedBy       User?    @relation("UserAttachments", fields: [uploadedByUserId], references: [id], onDelete: Cascade)
+
+  // Explicit Optional Relations
+  postId           String?
+  post             Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  // Ready for future integration:
+  // documentId String?
+  // document   Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  // albumId    String?
+  // album      GalleryAlbum? @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+
+  @@index([uploadedByUserId])
 }
 
 model Folder {
