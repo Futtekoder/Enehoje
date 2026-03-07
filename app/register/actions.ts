@@ -69,8 +69,10 @@ export async function registerUser(formData: FormData) {
         }
     })
 
-    // Compute the absolute URL based on Vercel deployment or localhost
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"
+    // Compute the absolute URL - explicit priority: NEXT_PUBLIC_APP_URL → VERCEL_URL → localhost
+    const appUrl =
+        process.env.NEXT_PUBLIC_APP_URL ||
+        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
 
     const approveLink = `${appUrl}/api/admin/users/moderate?token=${token}&action=APPROVE`
     const rejectLink = `${appUrl}/api/admin/users/moderate?token=${token}&action=REJECT`
