@@ -1,6 +1,7 @@
 import { format } from "date-fns"
 import { da } from "date-fns/locale"
-import { Clock, Info, Shield, User as UserIcon, Trash2 } from "lucide-react"
+import { Clock, Info, Shield, User as UserIcon, Trash2, MessageSquare } from "lucide-react"
+import Link from "next/link"
 
 export function OverviewTab({ event, currentUser, setEvent }: { event: any, currentUser: any, setEvent: any }) {
     const canDelete = currentUser.id === event.createdByUserId || currentUser.role === "SYSTEM_ADMIN"
@@ -84,6 +85,51 @@ export function OverviewTab({ event, currentUser, setEvent }: { event: any, curr
                         Gå til "Deltagelse" fanen for at tilmelde dig dagene.
                     </p>
                 </div>
+            </div>
+
+            {/* DISCUSSION CARD */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
+                        <MessageSquare className="w-5 h-5 mr-2 text-blue-500" /> Diskussion
+                    </h3>
+                </div>
+
+                {event.forumThreadId ? (
+                    <div className="space-y-4">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Der er en relateret diskussion i forum.
+                        </p>
+                        <Link
+                            href={`/forum/${event.forumThreadId}`}
+                            className="inline-flex w-full sm:w-auto items-center justify-center px-4 py-2 border border-blue-200 dark:border-blue-800 text-sm font-medium rounded-xl text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:border-blue-300 dark:hover:border-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                        >
+                            Åbn diskussion
+                        </Link>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Ingen diskussion endnu.
+                        </p>
+                        <form action={async () => {
+                            try {
+                                const { createLinkedDiscussion } = await import('../actions')
+                                await createLinkedDiscussion(event.id)
+                            } catch (e) {
+                                console.error(e)
+                                alert("Der skete en fejl. Prøv igen.")
+                            }
+                        }}>
+                            <button
+                                type="submit"
+                                className="inline-flex w-full sm:w-auto items-center justify-center px-4 py-2 shadow-sm text-sm font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                            >
+                                Start diskussion
+                            </button>
+                        </form>
+                    </div>
+                )}
             </div>
         </div>
     )

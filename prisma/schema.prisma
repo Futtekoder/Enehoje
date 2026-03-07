@@ -104,7 +104,11 @@ model User {
   taskSignups       TaskSignup[]
   taskVotes         TaskVote[]
 
-  attachments       Attachment[]         @relation("UserAttachments")
+  attachments Attachment[] @relation("UserAttachments")
+
+  // Forum relations
+  forumThreads ForumThread[] @relation("UserForumThreads")
+  forumPosts   ForumPost[]   @relation("UserForumPosts")
 }
 
 model Week {
@@ -196,28 +200,35 @@ model Comment {
 }
 
 model Attachment {
-  id               String   @id @default(uuid())
-  url              String   // S3 Public URL
-  fileKey          String?  // S3 Object Key (optional for legacy)
-  filename         String
-  mimeType         String
-  size             Int
+  id       String  @id @default(uuid())
+  url      String // S3 Public URL
+  fileKey  String? // S3 Object Key (optional for legacy)
+  filename String
+  mimeType String
+  size     Int
 
-  uploadedByUserId String?  // Made optional temporarily in case old records exist
-  uploadedBy       User?    @relation("UserAttachments", fields: [uploadedByUserId], references: [id], onDelete: Cascade)
+  uploadedByUserId String? // Made optional temporarily in case old records exist
+  uploadedBy       User?   @relation("UserAttachments", fields: [uploadedByUserId], references: [id], onDelete: Cascade)
 
   // Explicit Optional Relations
-  postId           String?
-  post             Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
+  postId String?
+  post   Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // Forum Optional Relations
+  forumThreadId String?
+  forumThread   ForumThread? @relation(fields: [forumThreadId], references: [id], onDelete: Cascade)
+
+  forumPostId String?
+  forumPost   ForumPost? @relation(fields: [forumPostId], references: [id], onDelete: Cascade)
+
   // Ready for future integration:
   // documentId String?
   // document   Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
   // albumId    String?
   // album      GalleryAlbum? @relation(fields: [albumId], references: [id], onDelete: Cascade)
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@index([uploadedByUserId])
 }
@@ -427,6 +438,7 @@ model Event {
   participations EventParticipation[]
   sailingWishes  SailingWish[]
   tasks          EventTask[]
+  forumThread    ForumThread?
 }
 
 model EventGroup {
@@ -504,8 +516,8 @@ model SailingWish {
   seats           Int                @default(1)
   notes           String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -549,8 +561,8 @@ model EventTask {
   dueDate            DateTime?
   attachmentFolderId String?
 
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   event            Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   createdByUser    User    @relation("TaskCreator", fields: [createdByUserId], references: [id])
@@ -590,32 +602,32 @@ model TaskVote {
 // -----------------------------------------
 
 model OperationUnit {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   title       String
-  slug        String   @unique
+  slug        String  @unique
   description String?
   icon        String?
-  order       Int      @default(0)
+  order       Int     @default(0)
 
-  sections    OperationSection[]
+  sections OperationSection[]
 }
 
 model OperationSection {
-  id            String   @id @default(cuid())
-  unitId        String
-  title         String
-  slug          String
-  description   String?
+  id          String  @id @default(cuid())
+  unitId      String
+  title       String
+  slug        String
+  description String?
 
-  videoKey      String?
-  videoSize     Int?
+  videoKey  String?
+  videoSize Int?
 
-  order         Int      @default(0)
-  isQuickAction Boolean  @default(false)
+  order         Int     @default(0)
+  isQuickAction Boolean @default(false)
 
-  unit          OperationUnit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  unit OperationUnit @relation(fields: [unitId], references: [id], onDelete: Cascade)
 
-  checklist     OperationChecklistItem[]
+  checklist OperationChecklistItem[]
 
   @@unique([unitId, slug])
 }
@@ -626,5 +638,56 @@ model OperationChecklistItem {
   text      String
   order     Int    @default(0)
 
-  section   OperationSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  section OperationSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+}
+
+// -----------------------------------------
+// FORUM
+// -----------------------------------------
+
+model ForumThread {
+  id              String @id @default(cuid())
+  title           String
+  createdByUserId String
+  createdBy       User   @relation("UserForumThreads", fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  posts       ForumPost[]
+  attachments Attachment[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  lastPostAt DateTime @default(now())
+
+  sourceType String    @default("WEB") // WEB, EMAIL, IMPORT
+  status     String    @default("ACTIVE") // ACTIVE, ARCHIVED
+  archivedAt DateTime?
+
+  // Future context linking
+  relatedEventId String? @unique
+  relatedEvent   Event?  @relation(fields: [relatedEventId], references: [id])
+
+  @@index([lastPostAt(sort: Desc)])
+}
+
+model ForumPost {
+  id       String      @id @default(cuid())
+  threadId String
+  thread   ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  authorUserId String
+  author       User   @relation("UserForumPosts", fields: [authorUserId], references: [id], onDelete: Cascade)
+
+  content String @db.Text
+
+  attachments Attachment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sourceType     String  @default("WEB") // WEB, EMAIL, IMPORT
+  emailMessageId String? @unique // To prevent duplicate inbound processing
+  emailInReplyTo String?
+  isEdited       Boolean @default(false)
+
+  @@index([threadId, createdAt(sort: Asc)])
 }

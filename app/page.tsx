@@ -47,9 +47,9 @@ export default async function LandingPage() {
     },
     {
       title: "Forum",
-      description: "Diskutér stort og småt med de andre andelshavere",
-      icon: <MessageSquare className="w-8 h-8 md:w-10 md:h-10 text-purple-100" />,
+      description: "Fælles diskussioner, spørgsmål og beskeder til alle på Enehøje.",
       href: "/forum",
+      icon: <MessageSquare className="w-8 h-8 md:w-10 md:h-10 text-white" />,
       color: "bg-purple-600/50 border-purple-400/30",
       hoverColor: "hover:bg-purple-600/80 hover:border-purple-400/60 hover:-translate-y-1 hover:shadow-2xl shadow-purple-900/50"
     }
